@@ -124,6 +124,7 @@
             font-size: 0.95rem;
             transition: var(--transition);
             position: relative;
+            cursor: pointer;
         }
 
         .nav-links a::after {
@@ -163,6 +164,10 @@
             font-weight: 600 !important;
             transition: var(--transition);
             box-shadow: 0 4px 16px rgba(255, 107, 138, 0.3);
+            border: none;
+            font-family: inherit;
+            font-size: 0.95rem;
+            cursor: pointer;
         }
 
         .nav-btn::after {
@@ -695,6 +700,193 @@
             }
         }
 
+        /* ===== SIGN UP MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            max-width: 480px;
+            width: 100%;
+            padding: 40px 36px 36px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.2);
+            animation: modalIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.92) translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.6rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--text);
+            transform: rotate(90deg);
+        }
+
+        .modal h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .modal h2 i {
+            color: var(--primary);
+            margin-right: 8px;
+        }
+
+        .modal .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+        }
+
+        .modal .form-group {
+            margin-bottom: 18px;
+        }
+
+        .modal .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            color: var(--text);
+        }
+
+        .modal .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: var(--transition);
+            background: #f8f9fa;
+        }
+
+        .modal .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(255, 107, 138, 0.1);
+        }
+
+        .modal .form-group input::placeholder {
+            color: #adb5bd;
+        }
+
+        .modal .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .modal .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            box-shadow: 0 4px 16px rgba(255, 107, 138, 0.3);
+            margin-top: 6px;
+        }
+
+        .modal .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(255, 107, 138, 0.4);
+        }
+
+        .modal .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .modal .form-footer {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .modal .form-footer a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .modal .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .modal .success-message {
+            display: none;
+            text-align: center;
+            padding: 20px 0 10px;
+        }
+
+        .modal .success-message.show {
+            display: block;
+        }
+
+        .modal .success-message i {
+            font-size: 3.5rem;
+            color: #22c55e;
+            margin-bottom: 12px;
+        }
+
+        .modal .success-message h3 {
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        .modal .success-message p {
+            color: var(--text-muted);
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 900px) {
             .nav-links {
@@ -777,6 +969,14 @@
                 left: 16px;
                 max-width: 100%;
             }
+
+            .modal {
+                padding: 30px 20px 24px;
+            }
+
+            .modal .form-row {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 480px) {
@@ -825,6 +1025,7 @@
             display: none !important;
         }
     </style>
+
 </head>
 
 <body>
@@ -841,7 +1042,7 @@
                 <li><a href="#" class="active">Discover</a></li>
                 <li><a href="#matches">Matches</a></li>
                 <li><a href="#">Messages</a></li>
-                <li><a href="#" class="nav-btn"><i class="fas fa-user-plus"></i> Sign Up</a></li>
+                <li><button class="nav-btn" id="openSignupBtn"><i class="fas fa-user-plus"></i> Sign Up</button></li>
             </ul>
 
             <button class="hamburger" id="hamburger" aria-label="Toggle menu">
@@ -851,6 +1052,54 @@
             </button>
         </div>
     </nav>
+
+    <!-- ===== SIGN UP MODAL ===== -->
+    <div class="modal-overlay" id="signupModal">
+        <div class="modal">
+            <button class="modal-close" id="closeSignupBtn" aria-label="Close modal">&times;</button>
+
+            <!-- Form -->
+            <div id="signupFormContainer">
+                <h2><i class="fas fa-heart"></i> Join LoveMatch</h2>
+                <p class="subtitle">Create your account and start finding your perfect match.</p>
+
+                <form id="signupForm" method="POST" action="https://formspree.io/f/xzdljqlv">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="name" placeholder="e.g. Alex Johnson" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="you@example.com" required />
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" placeholder="••••••••" required minlength="6" />
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <input type="text" id="gender" name="gender" placeholder="e.g. Female, Male, Non-binary" />
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn" id="signupSubmitBtn">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
+                    <div class="form-footer">
+                        Already have an account? <a href="#">Log in</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Success message (hidden by default) -->
+            <div class="success-message" id="signupSuccess">
+                <i class="fas fa-check-circle"></i>
+                <h3>You're all set!</h3>
+                <p>Welcome to LoveMatch. Check your email to verify your account.</p>
+                <button class="submit-btn" style="margin-top:20px;" id="successCloseBtn">Continue</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ===== HERO ===== -->
     <section class="hero">
@@ -985,7 +1234,7 @@
                 age: 27,
                 gender: 'female',
                 location: 'Miami, FL',
-                bio: '🌊 Beach lover & salsa dancer. Let’s dance!',
+                bio: '🌊 Beach lover & salsa dancer. Let\'s dance!',
                 tags: ['Dance', 'Beach', 'Music'],
                 image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=500&fit=crop&crop=face&q=80',
                 verified: true
@@ -1035,9 +1284,9 @@
             // 2.  STATE
             // =============================================================
             let currentFilter = 'all';
-            let matches = []; // array of user ids that we've liked
-            let likedSet = new Set(); // ids we've liked (even if not matched)
-            let passedSet = new Set(); // ids we've passed on
+            let matches = [];
+            let likedSet = new Set();
+            let passedSet = new Set();
 
             // =============================================================
             // 3.  DOM REFS
@@ -1049,6 +1298,16 @@
             const filterButtons = document.querySelectorAll('#filterGroup button');
             const hamburger = document.getElementById('hamburger');
             const navLinks = document.getElementById('navLinks');
+
+            // Signup modal elements
+            const modal = document.getElementById('signupModal');
+            const openBtn = document.getElementById('openSignupBtn');
+            const closeBtn = document.getElementById('closeSignupBtn');
+            const successCloseBtn = document.getElementById('successCloseBtn');
+            const signupForm = document.getElementById('signupForm');
+            const formContainer = document.getElementById('signupFormContainer');
+            const successMessage = document.getElementById('signupSuccess');
+            const submitBtn = document.getElementById('signupSubmitBtn');
 
             // =============================================================
             // 4.  RENDER CARDS
@@ -1081,10 +1340,8 @@
                         ? `<span class="verified"><i class="fas fa-check-circle"></i> Verified</span>`
                         : '';
 
-                    // Build tags
                     const tagsHtml = user.tags.map(t => `<span>#${t.toLowerCase()}</span>`).join('');
 
-                    // Like button state
                     let likeBtnHtml;
                     if (isLiked) {
                         likeBtnHtml = `
@@ -1141,7 +1398,6 @@
 
                 grid.innerHTML = html;
 
-                // Attach event listeners to buttons
                 document.querySelectorAll('.btn-like:not([disabled])').forEach(btn => {
                     btn.addEventListener('click', handleLike);
                 });
@@ -1160,14 +1416,11 @@
 
                 likedSet.add(id);
 
-                // Check if it's a match (the other person also liked this user)
-                // For demo, we'll randomly decide if it's a match (40% chance)
                 const isMatch = Math.random() < 0.4;
 
                 if (isMatch) {
                     if (!matches.includes(id)) {
                         matches.push(id);
-                        // Also add the current user to matches? For demo we just show.
                         showToast(`💞 It's a match with ${getUser(id).name}!`, 'match');
                         updateMatchesUI();
                     }
@@ -1214,18 +1467,15 @@
 
                 toastContainer.appendChild(toast);
 
-                // Auto-remove after 3.5s
                 const timeout = setTimeout(() => {
                     if (toast.parentNode) toast.remove();
                 }, 3500);
 
-                // Close button
                 toast.querySelector('.toast-close').addEventListener('click', () => {
                     clearTimeout(timeout);
                     toast.remove();
                 });
 
-                // Limit toasts to 3
                 while (toastContainer.children.length > 3) {
                     toastContainer.firstChild.remove();
                 }
@@ -1278,7 +1528,6 @@
                 navLinks.classList.toggle('open');
             });
 
-            // Close nav on link click (mobile)
             navLinks.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', () => {
                     navLinks.classList.remove('open');
@@ -1294,19 +1543,88 @@
             });
 
             // =============================================================
-            // 12. INIT
+            // 12. SIGN UP MODAL
+            // =============================================================
+            function openModal() {
+                modal.classList.add('open');
+                document.body.style.overflow = 'hidden';
+                // Reset form state
+                formContainer.style.display = 'block';
+                successMessage.classList.remove('show');
+                signupForm.reset();
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+            }
+
+            function closeModal() {
+                modal.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+
+            openBtn.addEventListener('click', openModal);
+            closeBtn.addEventListener('click', closeModal);
+            successCloseBtn.addEventListener('click', closeModal);
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+            });
+
+            // =============================================================
+            // 13. SIGN UP FORM SUBMISSION (Formspree)
+            // =============================================================
+            signupForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                // Disable button to prevent double submission
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+                const formData = new FormData(this);
+
+                try {
+                    const response = await fetch(this.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    if (response.ok) {
+                        // Success — show thank you message
+                        formContainer.style.display = 'none';
+                        successMessage.classList.add('show');
+                        showToast('✅ Account created successfully!', 'match');
+                    } else {
+                        // Error — show toast
+                        const data = await response.json();
+                        showToast('❌ ' + (data.error || 'Something went wrong. Please try again.'), 'pass');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+                    }
+                } catch (error) {
+                    showToast('❌ Network error. Please check your connection.', 'pass');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+                }
+            });
+
+            // =============================================================
+            // 14. INIT
             // =============================================================
             renderCards();
             updateMatchesUI();
 
             // =============================================================
-            // 13. KEYBOARD SHORTCUTS (fun)
+            // 15. KEYBOARD SHORTCUTS
             // =============================================================
             document.addEventListener('keydown', (e) => {
-                // 'r' to reset all (hidden easter egg)
                 if (e.key === 'r' && e.ctrlKey) {
                     e.preventDefault();
-                    // Reset everything
                     matches = [];
                     likedSet = new Set();
                     passedSet = new Set();
