@@ -1,2545 +1,2650 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LoveMatch — Blind Date & Chat</title>
-
-    <!-- Font Awesome 6 (free) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <!-- Google Font: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-
-    <style>
-        /* ===== RESET & BASE ===== */
-        *,
-        *::before,
-        *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #ff6b8a;
-            --primary-dark: #e53e6a;
-            --primary-light: #ff8fa8;
-            --secondary: #6c5ce7;
-            --secondary-light: #a29bfe;
-            --bg: #f8f9fe;
-            --card-bg: #ffffff;
-            --text: #1a1a2e;
-            --text-muted: #6c757d;
-            --shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-            --shadow-hover: 0 30px 80px rgba(0, 0, 0, 0.15);
-            --radius: 24px;
-            --radius-sm: 14px;
-            --transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-            --chat-width: 420px;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
-            padding-bottom: 40px;
-        }
-
-        /* ===== SCROLLBAR ===== */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
-        }
-
-        /* ===== NAVBAR ===== */
-        .navbar {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(255, 255, 255, 0.82);
-            backdrop-filter: blur(18px) saturate(180%);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-            padding: 14px 0;
-            transition: var(--transition);
-        }
-
-        .navbar .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 28px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: var(--text);
-            text-decoration: none;
-            letter-spacing: -0.5px;
-            cursor: pointer;
-        }
-
-        .logo i {
-            color: var(--primary);
-            font-size: 1.8rem;
-        }
-
-        .logo span {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 28px;
-            list-style: none;
-        }
-
-        .nav-links a,
-        .nav-links .nav-link-btn {
-            text-decoration: none;
-            color: var(--text-muted);
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: var(--transition);
-            position: relative;
-            cursor: pointer;
-            background: none;
-            border: none;
-            font-family: inherit;
-            padding: 0;
-        }
-
-        .nav-links a::after,
-        .nav-links .nav-link-btn::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2.5px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            transition: var(--transition);
-            border-radius: 4px;
-        }
-
-        .nav-links a:hover,
-        .nav-links .nav-link-btn:hover {
-            color: var(--text);
-        }
-
-        .nav-links a:hover::after,
-        .nav-links .nav-link-btn:hover::after {
-            width: 100%;
-        }
-
-        .nav-links a.active,
-        .nav-links .nav-link-btn.active {
-            color: var(--text);
-            font-weight: 600;
-        }
-
-        .nav-links a.active::after,
-        .nav-links .nav-link-btn.active::after {
-            width: 100%;
-        }
-
-        .nav-btn {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #fff !important;
-            padding: 8px 22px;
-            border-radius: 50px;
-            font-weight: 600 !important;
-            transition: var(--transition);
-            box-shadow: 0 4px 16px rgba(255, 107, 138, 0.3);
-            border: none;
-            font-family: inherit;
-            font-size: 0.95rem;
-            cursor: pointer;
-        }
-
-        .nav-btn::after {
-            display: none !important;
-        }
-
-        .nav-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(255, 107, 138, 0.4);
-            color: #fff !important;
-        }
-
-        .nav-link-btn .badge-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--primary);
-            border-radius: 50%;
-            margin-left: 4px;
-            animation: pulse-dot 1.8s ease-in-out infinite;
-        }
-
-        @keyframes pulse-dot {
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.4;
-                transform: scale(0.7);
-            }
-        }
-
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-            cursor: pointer;
-            background: none;
-            border: none;
-            padding: 4px;
-        }
-
-        .hamburger span {
-            width: 26px;
-            height: 3px;
-            background: var(--text);
-            border-radius: 6px;
-            transition: var(--transition);
-        }
-
-        /* ===== HERO ===== */
-        .hero {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 28px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 40px;
-            flex-wrap: wrap;
-        }
-
-        .hero-content {
-            flex: 1 1 420px;
-        }
-
-        .hero-content .badge {
-            display: inline-block;
-            background: rgba(255, 107, 138, 0.12);
-            color: var(--primary-dark);
-            font-weight: 600;
-            font-size: 0.8rem;
-            padding: 6px 18px;
-            border-radius: 50px;
-            letter-spacing: 0.3px;
-            margin-bottom: 18px;
-            border: 1px solid rgba(255, 107, 138, 0.15);
-        }
-
-        .hero-content h1 {
-            font-size: clamp(2.4rem, 5vw, 3.8rem);
-            font-weight: 900;
-            line-height: 1.1;
-            letter-spacing: -1.5px;
-            margin-bottom: 20px;
-        }
-
-        .hero-content h1 .highlight {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero-content p {
-            font-size: 1.15rem;
-            color: var(--text-muted);
-            max-width: 480px;
-            line-height: 1.7;
-            margin-bottom: 28px;
-        }
-
-        .hero-stats {
-            display: flex;
-            gap: 36px;
-            margin-top: 10px;
-        }
-
-        .hero-stats .stat {
-            text-align: center;
-        }
-
-        .hero-stats .stat .number {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: var(--text);
-        }
-
-        .hero-stats .stat .label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .hero-illustration {
-            flex: 1 1 380px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        .hero-illustration .floating-cards {
-            position: relative;
-            width: 320px;
-            height: 400px;
-        }
-
-        .floating-cards .card-sample {
-            position: absolute;
-            width: 200px;
-            height: 270px;
-            border-radius: var(--radius);
-            background: var(--card-bg);
-            box-shadow: var(--shadow-hover);
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            transition: var(--transition);
-            background-size: cover;
-            background-position: center;
-        }
-
-        .floating-cards .card-sample:nth-child(1) {
-            top: 10px;
-            right: 20px;
-            transform: rotate(8deg);
-            background-image: url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=500&fit=crop&crop=face');
-            z-index: 3;
-        }
-
-        .floating-cards .card-sample:nth-child(2) {
-            top: 60px;
-            left: 10px;
-            transform: rotate(-6deg);
-            background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop&crop=face');
-            z-index: 2;
-        }
-
-        .floating-cards .card-sample:nth-child(3) {
-            bottom: 20px;
-            left: 40px;
-            transform: rotate(4deg);
-            background-image: url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=500&fit=crop&crop=face');
-            z-index: 1;
-        }
-
-        .floating-cards .card-sample .card-label {
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(8px);
-            color: #fff;
-            padding: 8px 14px;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            width: fit-content;
-            letter-spacing: 0.3px;
-        }
-
-        .floating-cards .card-sample .card-label i {
-            margin-right: 6px;
-        }
-
-        /* ===== SECTION TITLE ===== */
-        .section-title {
-            max-width: 1200px;
-            margin: 50px auto 10px;
-            padding: 0 28px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .section-title h2 {
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-
-        .section-title h2 i {
-            color: var(--primary);
-            margin-right: 10px;
-        }
-
-        .section-title .sub {
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .section-title .filter-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .filter-group button {
-            padding: 8px 20px;
-            border: 2px solid #e9ecef;
-            background: transparent;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: inherit;
-        }
-
-        .filter-group button:hover {
-            border-color: var(--primary);
-            color: var(--text);
-        }
-
-        .filter-group button.active-filter {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-color: transparent;
-            color: #fff;
-            box-shadow: 0 4px 16px rgba(255, 107, 138, 0.3);
-        }
-
-        /* ===== CARDS GRID ===== */
-        .cards-grid {
-            max-width: 1200px;
-            margin: 24px auto 0;
-            padding: 0 28px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 28px;
-        }
-
-        /* ===== PROFILE CARD ===== */
-        .profile-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            position: relative;
-            cursor: default;
-            border: 1px solid rgba(0, 0, 0, 0.03);
-        }
-
-        .profile-card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .profile-card .card-image-wrapper {
-            position: relative;
-            width: 100%;
-            height: 280px;
-            overflow: hidden;
-            background: #e9ecef;
-        }
-
-        .profile-card .card-image-wrapper .card-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: var(--transition);
-        }
-
-        /* ===== PHOTO HIDDEN OVERLAY ===== */
-        .photo-hidden-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, #2d1b3d, #1a1a2e);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            z-index: 5;
-            transition: var(--transition);
-            backdrop-filter: blur(2px);
-        }
-
-        .photo-hidden-overlay i {
-            font-size: 3.2rem;
-            color: rgba(255, 255, 255, 0.3);
-            margin-bottom: 12px;
-            transition: var(--transition);
-        }
-
-        .photo-hidden-overlay .lock-label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            color: rgba(255, 255, 255, 0.5);
-            text-transform: uppercase;
-        }
-
-        .photo-hidden-overlay .meeting-badge {
-            margin-top: 10px;
-            background: rgba(255, 107, 138, 0.2);
-            padding: 4px 16px;
-            border-radius: 50px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--primary-light);
-            border: 1px solid rgba(255, 107, 138, 0.2);
-        }
-
-        .photo-hidden-overlay.revealed {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .profile-card .card-body {
-            padding: 20px 22px 22px;
-        }
-
-        .profile-card .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 6px;
-        }
-
-        .profile-card .card-header .name {
-            font-size: 1.2rem;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-        }
-
-        .profile-card .card-header .name .age {
-            font-weight: 500;
-            color: var(--text-muted);
-            margin-left: 4px;
-        }
-
-        .profile-card .card-header .verified {
-            color: #3b82f6;
-            font-size: 0.9rem;
-            background: rgba(59, 130, 246, 0.08);
-            padding: 2px 10px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.7rem;
-        }
-
-        .profile-card .location {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .profile-card .location i {
-            font-size: 0.7rem;
-        }
-
-        .profile-card .bio {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            line-height: 1.5;
-            margin-bottom: 14px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .profile-card .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-
-        .profile-card .tags span {
-            background: #f1f3f5;
-            padding: 4px 14px;
-            border-radius: 50px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            letter-spacing: 0.2px;
-        }
-
-        .profile-card .card-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 4px;
-            flex-wrap: wrap;
-        }
-
-        .profile-card .card-actions button {
-            flex: 1;
-            min-width: 72px;
-            padding: 10px 8px;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            font-family: inherit;
-        }
-
-        .btn-like {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: #fff;
-            box-shadow: 0 4px 14px rgba(255, 107, 138, 0.3);
-        }
-
-        .btn-like:hover:not(:disabled) {
-            transform: scale(1.03);
-            box-shadow: 0 8px 28px rgba(255, 107, 138, 0.4);
-        }
-
-        .btn-like.liked,
-        .btn-like:disabled {
-            background: #e9ecef;
-            color: var(--text-muted);
-            box-shadow: none;
-            cursor: not-allowed;
-        }
-
-        .btn-pass {
-            background: #f1f3f5;
-            color: var(--text-muted);
-        }
-
-        .btn-pass:hover:not(:disabled) {
-            background: #e9ecef;
-            color: var(--text);
-        }
-
-        .btn-pass.passed,
-        .btn-pass:disabled {
-            background: #e9ecef;
-            color: var(--text-muted);
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-meeting {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #fff;
-            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
-            flex: 1.2 !important;
-        }
-
-        .btn-meeting:hover:not(:disabled) {
-            transform: scale(1.03);
-            box-shadow: 0 8px 28px rgba(245, 158, 11, 0.4);
-        }
-
-        .btn-meeting:disabled {
-            background: #e9ecef;
-            color: var(--text-muted);
-            box-shadow: none;
-            cursor: not-allowed;
-        }
-
-        .btn-meeting.scheduled {
-            background: #22c55e;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.3);
-        }
-
-        .btn-meeting.scheduled:hover:not(:disabled) {
-            box-shadow: 0 8px 28px rgba(34, 197, 94, 0.4);
-        }
-
-        .btn-chat {
-            background: var(--secondary);
-            color: #fff;
-            box-shadow: 0 4px 14px rgba(108, 92, 231, 0.3);
-        }
-
-        .btn-chat:hover {
-            transform: scale(1.03);
-            box-shadow: 0 8px 28px rgba(108, 92, 231, 0.4);
-        }
-
-        .profile-card .match-badge {
-            margin-top: 10px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #f59e0b;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .profile-card .match-badge i {
-            color: var(--primary);
-        }
-
-        .profile-card .meeting-info {
-            margin-top: 8px;
-            font-size: 0.8rem;
-            color: #22c55e;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .profile-card .meeting-info i {
-            font-size: 0.9rem;
-        }
-
-        /* ===== MATCHES BANNER ===== */
-        .matches-banner {
-            max-width: 1200px;
-            margin: 32px auto 0;
-            padding: 0 28px;
-        }
-
-        .matches-banner .inner {
-            background: linear-gradient(135deg, rgba(255, 107, 138, 0.06), rgba(108, 92, 231, 0.06));
-            border: 1px solid rgba(255, 107, 138, 0.12);
-            border-radius: var(--radius);
-            padding: 18px 28px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 14px;
-        }
-
-        .matches-banner .inner .left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .matches-banner .inner .left i {
-            font-size: 1.6rem;
-            color: var(--primary);
-        }
-
-        .matches-banner .inner .left .count {
-            font-weight: 800;
-            font-size: 1.3rem;
-            color: var(--text);
-        }
-
-        .matches-banner .inner .left .label {
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .matches-banner .inner .matches-list {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .matches-banner .inner .matches-list .match-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #e9ecef;
-            border: 2.5px solid var(--primary);
-            object-fit: cover;
-            transition: var(--transition);
-            cursor: pointer;
-        }
-
-        .matches-banner .inner .matches-list .match-avatar:hover {
-            transform: scale(1.1);
-        }
-
-        .matches-banner .inner .no-matches {
-            color: var(--text-muted);
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        /* ===== TOAST NOTIFICATION ===== */
-        .toast-container {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 999;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-width: 380px;
-            width: 100%;
-        }
-
-        .toast {
-            background: var(--card-bg);
-            border-radius: var(--radius-sm);
-            padding: 16px 22px;
-            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
-            border-left: 5px solid var(--primary);
-            animation: slideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            font-weight: 500;
-            transform-origin: bottom right;
-        }
-
-        .toast.toast-match {
-            border-left-color: #f59e0b;
-        }
-        .toast.toast-match i {
-            color: #f59e0b;
-        }
-        .toast.toast-meeting {
-            border-left-color: #22c55e;
-        }
-        .toast.toast-meeting i {
-            color: #22c55e;
-        }
-        .toast.toast-chat {
-            border-left-color: var(--secondary);
-        }
-        .toast.toast-chat i {
-            color: var(--secondary);
-        }
-
-        .toast i {
-            font-size: 1.4rem;
-            color: var(--primary);
-        }
-
-        .toast .toast-close {
-            margin-left: auto;
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 0 4px;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        /* ===== SIGN UP MODAL ===== */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(6px);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-overlay.open {
-            display: flex;
-        }
-
-        .modal {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            max-width: 480px;
-            width: 100%;
-            padding: 40px 36px 36px;
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.2);
-            animation: modalIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-            position: relative;
-        }
-
-        @keyframes modalIn {
-            from {
-                opacity: 0;
-                transform: scale(0.92) translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 16px;
-            right: 20px;
-            background: none;
-            border: none;
-            font-size: 1.6rem;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: var(--transition);
-            line-height: 1;
-        }
-        .modal-close:hover {
-            color: var(--text);
-            transform: rotate(90deg);
-        }
-
-        .modal h2 {
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 6px;
-            letter-spacing: -0.5px;
-        }
-        .modal h2 i {
-            color: var(--primary);
-            margin-right: 8px;
-        }
-        .modal .subtitle {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 24px;
-        }
-
-        .modal .form-group {
-            margin-bottom: 18px;
-        }
-        .modal .form-group label {
-            display: block;
-            font-weight: 600;
-            font-size: 0.85rem;
-            margin-bottom: 5px;
-            color: var(--text);
-        }
-        .modal .form-group input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e9ecef;
-            border-radius: var(--radius-sm);
-            font-size: 1rem;
-            font-family: inherit;
-            transition: var(--transition);
-            background: #f8f9fa;
-        }
-        .modal .form-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(255, 107, 138, 0.1);
-        }
-        .modal .form-group input::placeholder {
-            color: #adb5bd;
-        }
-        .modal .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        .modal .submit-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #fff;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-size: 1.05rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: inherit;
-            box-shadow: 0 4px 16px rgba(255, 107, 138, 0.3);
-            margin-top: 6px;
-        }
-        .modal .submit-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(255, 107, 138, 0.4);
-        }
-        .modal .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .modal .form-footer {
-            text-align: center;
-            margin-top: 16px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-        .modal .form-footer a {
-            color: var(--primary);
-            font-weight: 600;
-            text-decoration: none;
-        }
-        .modal .form-footer a:hover {
-            text-decoration: underline;
-        }
-
-        .modal .success-message {
-            display: none;
-            text-align: center;
-            padding: 20px 0 10px;
-        }
-        .modal .success-message.show {
-            display: block;
-        }
-        .modal .success-message i {
-            font-size: 3.5rem;
-            color: #22c55e;
-            margin-bottom: 12px;
-        }
-        .modal .success-message h3 {
-            font-size: 1.3rem;
-            margin-bottom: 4px;
-        }
-        .modal .success-message p {
-            color: var(--text-muted);
-        }
-
-        /* ===== DATE PICKER MODAL ===== */
-        .date-picker-modal .modal {
-            max-width: 420px;
-        }
-        .date-picker-modal .modal input[type="date"] {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e9ecef;
-            border-radius: var(--radius-sm);
-            font-size: 1rem;
-            font-family: inherit;
-            transition: var(--transition);
-            background: #f8f9fa;
-        }
-        .date-picker-modal .modal input[type="date"]:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(255, 107, 138, 0.1);
-        }
-
-        /* ===== CHAT PANEL ===== */
-        .chat-panel-overlay {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 800;
-            display: none;
-            justify-content: flex-end;
-            backdrop-filter: blur(2px);
-        }
-
-        .chat-panel-overlay.open {
-            display: flex;
-        }
-
-        .chat-panel {
-            width: 100%;
-            max-width: 480px;
-            height: 100%;
-            background: var(--card-bg);
-            box-shadow: -20px 0 60px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            animation: slideInChat 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        @keyframes slideInChat {
-            from {
-                transform: translateX(100%);
-            }
-            to {
-                transform: translateX(0);
-            }
-        }
-
-        .chat-panel-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #f1f3f5;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
-            background: var(--card-bg);
-            border-radius: 0 0 0 0;
-        }
-
-        .chat-panel-header .chat-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .chat-panel-header .chat-title img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--primary);
-        }
-
-        .chat-panel-header .chat-title .name {
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        .chat-panel-header .chat-title .status {
-            font-size: 0.75rem;
-            color: #22c55e;
-            font-weight: 500;
-        }
-
-        .chat-panel-header .close-chat {
-            background: none;
-            border: none;
-            font-size: 1.4rem;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: var(--transition);
-            padding: 4px;
-        }
-        .chat-panel-header .close-chat:hover {
-            color: var(--text);
-            transform: rotate(90deg);
-        }
-
-        .chat-panel-matches {
-            padding: 12px 16px;
-            border-bottom: 1px solid #f1f3f5;
-            flex-shrink: 0;
-            background: #fafbfc;
-            overflow-x: auto;
-        }
-
-        .chat-panel-matches .matches-scroll {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .chat-panel-matches .matches-scroll .match-chip {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 14px 6px 6px;
-            background: var(--card-bg);
-            border-radius: 50px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            border: 2px solid transparent;
-            cursor: pointer;
-            transition: var(--transition);
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .chat-panel-matches .matches-scroll .match-chip:hover {
-            border-color: var(--primary-light);
-        }
-
-        .chat-panel-matches .matches-scroll .match-chip.active {
-            border-color: var(--primary);
-            background: rgba(255, 107, 138, 0.04);
-        }
-
-        .chat-panel-matches .matches-scroll .match-chip img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .chat-panel-matches .matches-scroll .match-chip .chip-name {
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .chat-panel-matches .matches-scroll .match-chip .chip-badge {
-            font-size: 0.6rem;
-            background: var(--primary);
-            color: #fff;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-        }
-
-        .chat-panel-matches .no-chat-matches {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            padding: 4px 0;
-        }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: #fafbfc;
-        }
-
-        .chat-messages .message {
-            max-width: 82%;
-            padding: 10px 16px;
-            border-radius: 16px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            animation: msgIn 0.25s ease;
-            word-wrap: break-word;
-        }
-
-        @keyframes msgIn {
-            from {
-                opacity: 0;
-                transform: translateY(6px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .chat-messages .message.sent {
-            align-self: flex-end;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: #fff;
-            border-bottom-right-radius: 4px;
-        }
-
-        .chat-messages .message.received {
-            align-self: flex-start;
-            background: var(--card-bg);
-            color: var(--text);
-            border-bottom-left-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-
-        .chat-messages .message .msg-time {
-            font-size: 0.6rem;
-            opacity: 0.6;
-            margin-top: 4px;
-            display: block;
-            text-align: right;
-        }
-
-        .chat-messages .message.received .msg-time {
-            text-align: left;
-        }
-
-        .chat-messages .empty-chat {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin: auto;
-            padding: 20px;
-        }
-
-        .chat-messages .empty-chat i {
-            font-size: 2.4rem;
-            color: #dee2e6;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .chat-input-area {
-            padding: 16px 20px;
-            border-top: 1px solid #f1f3f5;
-            display: flex;
-            gap: 12px;
-            flex-shrink: 0;
-            background: var(--card-bg);
-        }
-
-        .chat-input-area input {
-            flex: 1;
-            padding: 12px 18px;
-            border: 2px solid #e9ecef;
-            border-radius: 50px;
-            font-size: 0.95rem;
-            font-family: inherit;
-            transition: var(--transition);
-            background: #f8f9fa;
-        }
-
-        .chat-input-area input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(255, 107, 138, 0.08);
-        }
-
-        .chat-input-area .send-btn {
-            padding: 12px 22px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #fff;
-            border: none;
-            border-radius: 50px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: inherit;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .chat-input-area .send-btn:hover:not(:disabled) {
-            transform: scale(1.04);
-            box-shadow: 0 4px 20px rgba(255, 107, 138, 0.3);
-        }
-
-        .chat-input-area .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* ===== EMPTY STATE ===== */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-muted);
-            grid-column: 1 / -1;
-        }
-        .empty-state i {
-            font-size: 3rem;
-            color: #dee2e6;
-            margin-bottom: 16px;
-        }
-        .empty-state h3 {
-            font-size: 1.3rem;
-            color: var(--text);
-            margin-bottom: 6px;
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 900px) {
-            .nav-links {
-                gap: 16px;
-            }
-            .hero {
-                flex-direction: column;
-                text-align: center;
-            }
-            .hero-content p {
-                max-width: 100%;
-                margin-left: auto;
-                margin-right: auto;
-            }
-            .hero-stats {
-                justify-content: center;
-            }
-            .hero-illustration .floating-cards {
-                width: 240px;
-                height: 300px;
-            }
-            .floating-cards .card-sample {
-                width: 150px;
-                height: 200px;
-            }
-            .floating-cards .card-sample .card-label {
-                font-size: 0.6rem;
-                padding: 4px 10px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background: rgba(255, 255, 255, 0.98);
-                backdrop-filter: blur(18px);
-                padding: 20px 28px;
-                gap: 16px;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
-            }
-            .nav-links.open {
-                display: flex;
-            }
-            .hamburger {
-                display: flex;
-            }
-            .nav-btn {
-                text-align: center;
-            }
-            .section-title {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .cards-grid {
-                grid-template-columns: 1fr;
-                max-width: 420px;
-                margin-left: auto;
-                margin-right: auto;
-            }
-            .matches-banner .inner {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .toast-container {
-                bottom: 16px;
-                right: 16px;
-                left: 16px;
-                max-width: 100%;
-            }
-            .modal {
-                padding: 30px 20px 24px;
-            }
-            .modal .form-row {
-                grid-template-columns: 1fr;
-            }
-            .chat-panel {
-                max-width: 100%;
-            }
-            .profile-card .card-image-wrapper {
-                height: 220px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero {
-                padding: 20px 16px 10px;
-            }
-            .hero-content h1 {
-                font-size: 2rem;
-            }
-            .hero-stats {
-                gap: 20px;
-            }
-            .hero-stats .stat .number {
-                font-size: 1.2rem;
-            }
-            .section-title h2 {
-                font-size: 1.5rem;
-            }
-            .profile-card .card-image-wrapper {
-                height: 200px;
-            }
-            .profile-card .card-actions button {
-                font-size: 0.75rem;
-                padding: 8px 6px;
-            }
-        }
-
-        .hidden {
-            display: none !important;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoveMatch — Blind Date & Chat</title>
+
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Font: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       ROOT VARIABLES (Professional Palette)
+       ============================================================ */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #6C5CE7;
+      /* deep purple */
+      --primary-dark: #5A4BD1;
+      --primary-light: #A29BFE;
+      --secondary: #FF6B8A;
+      /* rose gold accent */
+      --secondary-dark: #E53E6A;
+      --accent-gold: #F59E0B;
+
+      --bg: #F4F6FB;
+      --card-bg: #FFFFFF;
+      --text-primary: #1A1A2E;
+      --text-secondary: #4A4A6A;
+      --text-muted: #8A8AA8;
+      --border-light: #E8ECF4;
+      --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.12);
+      --radius-card: 20px;
+      --radius-btn: 50px;
+      --radius-sm: 12px;
+      --transition: 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       SCROLLBAR
+       ============================================================ */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--border-light);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary-light);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+
+    /* ============================================================
+       NAVBAR
+       ============================================================ */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(16px) saturate(180%);
+      border-bottom: 1px solid var(--border-light);
+      padding: 12px 0;
+      transition: var(--transition);
+    }
+
+    .navbar .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    .logo i {
+      color: var(--secondary);
+      font-size: 1.6rem;
+    }
+
+    .logo span {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a,
+    .nav-links .nav-link-btn {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      position: relative;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: inherit;
+      padding: 0;
+    }
+
+    .nav-links a::after,
+    .nav-links .nav-link-btn::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2.5px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transition: var(--transition);
+      border-radius: 4px;
+    }
+
+    .nav-links a:hover,
+    .nav-links .nav-link-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .nav-links a:hover::after,
+    .nav-links .nav-link-btn:hover::after {
+      width: 100%;
+    }
+
+    .nav-links a.active,
+    .nav-links .nav-link-btn.active {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .nav-links a.active::after,
+    .nav-links .nav-link-btn.active::after {
+      width: 100%;
+    }
+
+    .nav-btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff !important;
+      padding: 8px 24px;
+      border-radius: var(--radius-btn);
+      font-weight: 600 !important;
+      transition: var(--transition);
+      box-shadow: 0 4px 16px rgba(108, 92, 231, 0.25);
+      border: none;
+      font-family: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .nav-btn::after {
+      display: none !important;
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(108, 92, 231, 0.35);
+      color: #fff !important;
+    }
+
+    .nav-link-btn .badge-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--secondary);
+      border-radius: 50%;
+      margin-left: 4px;
+      animation: pulse-dot 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.3;
+        transform: scale(0.7);
+      }
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+
+    .hamburger span {
+      width: 26px;
+      height: 2.5px;
+      background: var(--text-primary);
+      border-radius: 6px;
+      transition: var(--transition);
+    }
+
+    /* ============================================================
+       HERO
+       ============================================================ */
+    .hero {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 48px 32px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+
+    .hero-content {
+      flex: 1 1 440px;
+    }
+
+    .hero-content .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(108, 92, 231, 0.08);
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.75rem;
+      padding: 6px 18px;
+      border-radius: var(--radius-btn);
+      letter-spacing: 0.3px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(108, 92, 231, 0.12);
+    }
+
+    .hero-content h1 {
+      font-size: clamp(2.6rem, 5.5vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+    }
+
+    .hero-content h1 .highlight {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-content p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 480px;
+      line-height: 1.8;
+      margin-bottom: 28px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 40px;
+      margin-top: 8px;
+    }
+
+    .hero-stats .stat {
+      text-align: left;
+    }
+
+    .hero-stats .stat .number {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .hero-stats .stat .label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .hero-illustration {
+      flex: 1 1 380px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .hero-illustration .floating-cards {
+      position: relative;
+      width: 320px;
+      height: 400px;
+    }
+
+    .floating-cards .card-sample {
+      position: absolute;
+      width: 200px;
+      height: 270px;
+      border-radius: var(--radius-card);
+      background: var(--card-bg);
+      box-shadow: var(--shadow-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      transition: var(--transition);
+      background-size: cover;
+      background-position: center;
+    }
+
+    .floating-cards .card-sample:nth-child(1) {
+      top: 10px;
+      right: 20px;
+      transform: rotate(8deg);
+      background-image: url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=500&fit=crop&crop=face');
+      z-index: 3;
+    }
+
+    .floating-cards .card-sample:nth-child(2) {
+      top: 60px;
+      left: 10px;
+      transform: rotate(-6deg);
+      background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop&crop=face');
+      z-index: 2;
+    }
+
+    .floating-cards .card-sample:nth-child(3) {
+      bottom: 20px;
+      left: 40px;
+      transform: rotate(4deg);
+      background-image: url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=500&fit=crop&crop=face');
+      z-index: 1;
+    }
+
+    .floating-cards .card-sample .card-label {
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: var(--radius-btn);
+      font-size: 0.7rem;
+      font-weight: 600;
+      width: fit-content;
+      letter-spacing: 0.3px;
+    }
+
+    .floating-cards .card-sample .card-label i {
+      margin-right: 6px;
+    }
+
+    /* ============================================================
+       SECTION TITLE
+       ============================================================ */
+    .section-title {
+      max-width: 1280px;
+      margin: 48px auto 12px;
+      padding: 0 32px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .section-title h2 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .section-title h2 i {
+      color: var(--primary);
+      margin-right: 10px;
+    }
+
+    .section-title .sub {
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .section-title .filter-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-group button {
+      padding: 6px 18px;
+      border: 2px solid var(--border-light);
+      background: transparent;
+      border-radius: var(--radius-btn);
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+
+    .filter-group button:hover {
+      border-color: var(--primary-light);
+      color: var(--text-primary);
+    }
+
+    .filter-group button.active-filter {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(108, 92, 231, 0.25);
+    }
+
+    /* ============================================================
+       CARDS GRID
+       ============================================================ */
+    .cards-grid {
+      max-width: 1280px;
+      margin: 20px auto 0;
+      padding: 0 32px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 28px;
+    }
+
+    /* ============================================================
+       PROFILE CARD
+       ============================================================ */
+    .profile-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      border: 1px solid var(--border-light);
+      cursor: default;
+    }
+
+    .profile-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-light);
+    }
+
+    .profile-card .card-image-wrapper {
+      position: relative;
+      width: 100%;
+      height: 280px;
+      overflow: hidden;
+      background: #E8ECF4;
+      cursor: pointer;
+    }
+
+    .profile-card .card-image-wrapper .card-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: var(--transition);
+    }
+
+    /* Photo hidden overlay */
+    .photo-hidden-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(145deg, #1A1A2E, #2D1B3D);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      z-index: 5;
+      transition: var(--transition);
+      backdrop-filter: blur(4px);
+    }
+
+    .photo-hidden-overlay i {
+      font-size: 3rem;
+      color: rgba(255, 255, 255, 0.15);
+      margin-bottom: 12px;
+      transition: var(--transition);
+    }
+
+    .photo-hidden-overlay .lock-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: rgba(255, 255, 255, 0.4);
+      text-transform: uppercase;
+    }
+
+    .photo-hidden-overlay .meeting-badge {
+      margin-top: 10px;
+      background: rgba(255, 107, 138, 0.15);
+      padding: 4px 16px;
+      border-radius: var(--radius-btn);
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--secondary);
+      border: 1px solid rgba(255, 107, 138, 0.15);
+    }
+
+    .photo-hidden-overlay.revealed {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .profile-card .card-body {
+      padding: 20px 22px 22px;
+    }
+
+    .profile-card .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 4px;
+    }
+
+    .profile-card .card-header .name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .profile-card .card-header .name .age {
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-left: 4px;
+    }
+
+    .profile-card .card-header .verified {
+      color: #3B82F6;
+      font-size: 0.7rem;
+      background: rgba(59, 130, 246, 0.08);
+      padding: 2px 12px;
+      border-radius: var(--radius-btn);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .profile-card .location {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .profile-card .location i {
+      font-size: 0.7rem;
+    }
+
+    .profile-card .bio {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .profile-card .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .profile-card .tags span {
+      background: var(--bg);
+      padding: 3px 14px;
+      border-radius: var(--radius-btn);
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.2px;
+    }
+
+    .profile-card .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .profile-card .card-actions button {
+      flex: 1;
+      min-width: 64px;
+      padding: 8px 6px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: inherit;
+    }
+
+    .btn-like {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(108, 92, 231, 0.2);
+    }
+
+    .btn-like:hover:not(:disabled) {
+      transform: scale(1.04);
+      box-shadow: 0 8px 28px rgba(108, 92, 231, 0.3);
+    }
+
+    .btn-like.liked,
+    .btn-like:disabled {
+      background: var(--border-light);
+      color: var(--text-muted);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .btn-pass {
+      background: var(--bg);
+      color: var(--text-muted);
+    }
+
+    .btn-pass:hover:not(:disabled) {
+      background: var(--border-light);
+      color: var(--text-primary);
+    }
+
+    .btn-pass.passed,
+    .btn-pass:disabled {
+      background: var(--border-light);
+      color: var(--text-muted);
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-meeting {
+      background: linear-gradient(135deg, var(--accent-gold), #D97706);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.2);
+      flex: 1.2 !important;
+    }
+
+    .btn-meeting:hover:not(:disabled) {
+      transform: scale(1.04);
+      box-shadow: 0 8px 28px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-meeting:disabled {
+      background: var(--border-light);
+      color: var(--text-muted);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .btn-meeting.scheduled {
+      background: #22C55E;
+      box-shadow: 0 4px 14px rgba(34, 197, 94, 0.2);
+    }
+
+    .btn-meeting.scheduled:disabled {
+      background: #22C55E;
+      color: #fff;
+      opacity: 0.7;
+    }
+
+    .btn-chat {
+      background: var(--primary-light);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(108, 92, 231, 0.15);
+    }
+
+    .btn-chat:hover:not(:disabled) {
+      transform: scale(1.04);
+      box-shadow: 0 8px 28px rgba(108, 92, 231, 0.25);
+    }
+
+    .btn-chat:disabled {
+      background: var(--border-light);
+      color: var(--text-muted);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .profile-card .match-badge {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .profile-card .match-badge i {
+      color: var(--secondary);
+    }
+
+    .profile-card .meeting-info {
+      margin-top: 6px;
+      font-size: 0.8rem;
+      color: #22C55E;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .profile-card .meeting-info i {
+      font-size: 0.9rem;
+    }
+
+    /* ============================================================
+       MATCHES BANNER
+       ============================================================ */
+    .matches-banner {
+      max-width: 1280px;
+      margin: 32px auto 0;
+      padding: 0 32px;
+    }
+
+    .matches-banner .inner {
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-card);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .matches-banner .inner .left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .matches-banner .inner .left i {
+      font-size: 1.4rem;
+      color: var(--secondary);
+    }
+
+    .matches-banner .inner .left .count {
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--text-primary);
+    }
+
+    .matches-banner .inner .left .label {
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .matches-banner .inner .matches-list {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .matches-banner .inner .matches-list .match-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--border-light);
+      border: 2.5px solid var(--primary-light);
+      object-fit: cover;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .matches-banner .inner .matches-list .match-avatar:hover {
+      transform: scale(1.1);
+      border-color: var(--primary);
+    }
+
+    .matches-banner .inner .no-matches {
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================================
+       TOAST NOTIFICATION
+       ============================================================ */
+    .toast-container {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .toast {
+      background: var(--card-bg);
+      border-radius: var(--radius-sm);
+      padding: 14px 20px;
+      box-shadow: var(--shadow-lg);
+      border-left: 4px solid var(--primary);
+      animation: slideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transform-origin: bottom right;
+    }
+
+    .toast.toast-match {
+      border-left-color: var(--secondary);
+    }
+    .toast.toast-match i {
+      color: var(--secondary);
+    }
+    .toast.toast-meeting {
+      border-left-color: var(--accent-gold);
+    }
+    .toast.toast-meeting i {
+      color: var(--accent-gold);
+    }
+    .toast.toast-chat {
+      border-left-color: var(--primary-light);
+    }
+    .toast.toast-chat i {
+      color: var(--primary-light);
+    }
+
+    .toast i {
+      font-size: 1.2rem;
+      color: var(--primary);
+    }
+
+    .toast .toast-close {
+      margin-left: auto;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0 4px;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* ============================================================
+       MODALS (Sign Up, Date Picker)
+       ============================================================ */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      max-width: 480px;
+      width: 100%;
+      padding: 36px 32px 32px;
+      box-shadow: var(--shadow-lg);
+      animation: modalIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(0.92) translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      line-height: 1;
+    }
+    .modal-close:hover {
+      color: var(--text-primary);
+      transform: rotate(90deg);
+    }
+
+    .modal h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+      letter-spacing: -0.5px;
+    }
+    .modal h2 i {
+      color: var(--primary);
+      margin-right: 8px;
+    }
+    .modal .subtitle {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+
+    .modal .form-group {
+      margin-bottom: 16px;
+    }
+    .modal .form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+      color: var(--text-secondary);
+    }
+    .modal .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: var(--transition);
+      background: var(--bg);
+    }
+    .modal .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.08);
+    }
+    .modal .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .modal .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: inherit;
+      box-shadow: 0 4px 16px rgba(108, 92, 231, 0.2);
+      margin-top: 4px;
+    }
+    .modal .submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(108, 92, 231, 0.3);
+    }
+    .modal .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .modal .form-footer {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .modal .form-footer a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .modal .form-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .modal .success-message {
+      display: none;
+      text-align: center;
+      padding: 20px 0 10px;
+    }
+    .modal .success-message.show {
+      display: block;
+    }
+    .modal .success-message i {
+      font-size: 3.2rem;
+      color: #22C55E;
+      margin-bottom: 12px;
+    }
+    .modal .success-message h3 {
+      font-size: 1.2rem;
+      margin-bottom: 4px;
+    }
+    .modal .success-message p {
+      color: var(--text-secondary);
+    }
+
+    /* Date picker modal */
+    .date-picker-modal .modal {
+      max-width: 420px;
+    }
+    .date-picker-modal .modal input[type="date"] {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: var(--transition);
+      background: var(--bg);
+    }
+    .date-picker-modal .modal input[type="date"]:focus {
+      outline: none;
+      border-color: var(--accent-gold);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.08);
+    }
+
+    /* ============================================================
+       CHAT PANEL
+       ============================================================ */
+    .chat-panel-overlay {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 800;
+      display: none;
+      justify-content: flex-end;
+      backdrop-filter: blur(4px);
+    }
+
+    .chat-panel-overlay.open {
+      display: flex;
+    }
+
+    .chat-panel {
+      width: 100%;
+      max-width: 480px;
+      height: 100%;
+      background: var(--card-bg);
+      box-shadow: -20px 0 60px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      animation: slideInChat 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes slideInChat {
+      from {
+        transform: translateX(100%);
+      }
+      to {
+        transform: translateX(0);
+      }
+    }
+
+    .chat-panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      background: var(--card-bg);
+    }
+
+    .chat-panel-header .chat-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chat-panel-header .chat-title .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary-light);
+    }
+
+    .chat-panel-header .chat-title .name {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .chat-panel-header .chat-title .status {
+      font-size: 0.7rem;
+      color: #22C55E;
+      font-weight: 500;
+    }
+
+    .chat-panel-header .close-chat {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      padding: 4px;
+    }
+    .chat-panel-header .close-chat:hover {
+      color: var(--text-primary);
+      transform: rotate(90deg);
+    }
+
+    .chat-panel-matches {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-light);
+      flex-shrink: 0;
+      background: var(--bg);
+      overflow-x: auto;
+    }
+
+    .chat-panel-matches .matches-scroll {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .chat-panel-matches .matches-scroll .match-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 14px 4px 4px;
+      background: var(--card-bg);
+      border-radius: var(--radius-btn);
+      box-shadow: var(--shadow-sm);
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .chat-panel-matches .matches-scroll .match-chip:hover {
+      border-color: var(--primary-light);
+    }
+
+    .chat-panel-matches .matches-scroll .match-chip.active {
+      border-color: var(--primary);
+      background: rgba(108, 92, 231, 0.04);
+    }
+
+    .chat-panel-matches .matches-scroll .match-chip img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .chat-panel-matches .matches-scroll .match-chip .chip-name {
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    .chat-panel-matches .matches-scroll .match-chip .chip-badge {
+      font-size: 0.5rem;
+      background: var(--secondary);
+      color: #fff;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .chat-panel-matches .no-chat-matches {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      padding: 4px 0;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: var(--bg);
+    }
+
+    .chat-messages .message {
+      max-width: 82%;
+      padding: 10px 16px;
+      border-radius: 16px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      animation: msgIn 0.25s ease;
+      word-wrap: break-word;
+      box-shadow: var(--shadow-sm);
+    }
+
+    @keyframes msgIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .chat-messages .message.sent {
+      align-self: flex-end;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-messages .message.received {
+      align-self: flex-start;
+      background: var(--card-bg);
+      color: var(--text-primary);
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-messages .message .msg-time {
+      font-size: 0.6rem;
+      opacity: 0.6;
+      margin-top: 4px;
+      display: block;
+      text-align: right;
+    }
+
+    .chat-messages .message.received .msg-time {
+      text-align: left;
+    }
+
+    .chat-messages .empty-chat {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .chat-messages .empty-chat i {
+      font-size: 2.4rem;
+      color: var(--border-light);
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .chat-messages .typing-indicator {
+      align-self: flex-start;
+      background: var(--card-bg);
+      padding: 8px 16px;
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      gap: 4px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .chat-messages .typing-indicator span {
+      animation: typingDot 1.4s infinite;
+      opacity: 0.4;
+    }
+
+    .chat-messages .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .chat-messages .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typingDot {
+      0%,
+      60%,
+      100% {
+        opacity: 0.4;
+        transform: translateY(0);
+      }
+      30% {
+        opacity: 1;
+        transform: translateY(-3px);
+      }
+    }
+
+    .chat-input-area {
+      padding: 14px 20px 18px;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      gap: 12px;
+      flex-shrink: 0;
+      background: var(--card-bg);
+    }
+
+    .chat-input-area input {
+      flex: 1;
+      padding: 12px 18px;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-btn);
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: var(--transition);
+      background: var(--bg);
+    }
+
+    .chat-input-area input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.06);
+    }
+
+    .chat-input-area .send-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-btn);
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: inherit;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .chat-input-area .send-btn:hover:not(:disabled) {
+      transform: scale(1.04);
+      box-shadow: 0 4px 20px rgba(108, 92, 231, 0.3);
+    }
+
+    .chat-input-area .send-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* ============================================================
+       EMPTY STATE
+       ============================================================ */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+      grid-column: 1 / -1;
+    }
+    .empty-state i {
+      font-size: 3rem;
+      color: var(--border-light);
+      margin-bottom: 16px;
+    }
+    .empty-state h3 {
+      font-size: 1.2rem;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 900px) {
+      .nav-links {
+        gap: 20px;
+      }
+      .hero {
+        flex-direction: column;
+        text-align: center;
+      }
+      .hero-content p {
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .hero-stats {
+        justify-content: center;
+      }
+      .hero-stats .stat {
+        text-align: center;
+      }
+      .hero-illustration .floating-cards {
+        width: 240px;
+        height: 300px;
+      }
+      .floating-cards .card-sample {
+        width: 150px;
+        height: 200px;
+      }
+      .floating-cards .card-sample .card-label {
+        font-size: 0.6rem;
+        padding: 4px 10px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(18px);
+        padding: 20px 32px;
+        gap: 16px;
+        border-bottom: 1px solid var(--border-light);
+        box-shadow: var(--shadow-md);
+      }
+      .nav-links.open {
+        display: flex;
+      }
+      .hamburger {
+        display: flex;
+      }
+      .nav-btn {
+        text-align: center;
+      }
+      .section-title {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .cards-grid {
+        grid-template-columns: 1fr;
+        max-width: 420px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .matches-banner .inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .toast-container {
+        bottom: 16px;
+        right: 16px;
+        left: 16px;
+        max-width: 100%;
+      }
+      .modal {
+        padding: 28px 20px 24px;
+      }
+      .modal .form-row {
+        grid-template-columns: 1fr;
+      }
+      .chat-panel {
+        max-width: 100%;
+      }
+      .profile-card .card-image-wrapper {
+        height: 220px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero {
+        padding: 24px 16px 12px;
+      }
+      .hero-content h1 {
+        font-size: 2rem;
+      }
+      .hero-stats {
+        gap: 20px;
+      }
+      .hero-stats .stat .number {
+        font-size: 1.2rem;
+      }
+      .section-title h2 {
+        font-size: 1.4rem;
+      }
+      .profile-card .card-image-wrapper {
+        height: 200px;
+      }
+      .profile-card .card-actions button {
+        font-size: 0.7rem;
+        padding: 6px 4px;
+        min-width: 56px;
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
 
 </head>
-
 <body>
 
-    <!-- ===== NAVBAR ===== -->
-    <nav class="navbar" id="navbar">
-        <div class="container">
-            <a href="#" class="logo">
-                <i class="fas fa-heart"></i>
-                <span>LoveMatch</span>
-            </a>
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="#" class="logo">
+        <i class="fas fa-heart"></i>
+        <span>LoveMatch</span>
+      </a>
 
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#" class="active" data-section="discover">Discover</a></li>
-                <li><a href="#matches">Matches</a></li>
-                <li><button class="nav-link-btn" id="openChatBtn" data-section="chat">
-                        <i class="fas fa-comment-dots"></i> Messages
-                        <span class="badge-dot" id="chatBadgeDot" style="display:none;"></span>
-                    </button></li>
-                <li><button class="nav-btn" id="openSignupBtn"><i class="fas fa-user-plus"></i> Sign Up</button></li>
-            </ul>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#" class="active" data-section="discover">Discover</a></li>
+        <li><a href="#matches">Matches</a></li>
+        <li><button class="nav-link-btn" id="openChatBtn" data-section="chat">
+            <i class="fas fa-comment-dots"></i> Messages
+            <span class="badge-dot" id="chatBadgeDot" style="display:none;"></span>
+          </button></li>
+        <li><button class="nav-btn" id="openSignupBtn"><i class="fas fa-user-plus"></i> Sign Up</button></li>
+      </ul>
 
-            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-    </nav>
-
-    <!-- ===== SIGN UP MODAL ===== -->
-    <div class="modal-overlay" id="signupModal">
-        <div class="modal">
-            <button class="modal-close" id="closeSignupBtn">&times;</button>
-            <div id="signupFormContainer">
-                <h2><i class="fas fa-heart"></i> Join LoveMatch</h2>
-                <p class="subtitle">Create your account and start finding your perfect match.</p>
-                <form id="signupForm" method="POST" action="https://formspree.io/f/xzdljqlv">
-                    <div class="form-group">
-                        <label for="fullName">Full Name</label>
-                        <input type="text" id="fullName" name="name" placeholder="e.g. Alex Johnson" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" placeholder="you@example.com" required />
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input type="password" id="password" name="password" placeholder="••••••••" required minlength="6" />
-                        </div>
-                        <div class="form-group">
-                            <label for="gender">Gender</label>
-                            <input type="text" id="gender" name="gender" placeholder="e.g. Female, Male" />
-                        </div>
-                    </div>
-                    <button type="submit" class="submit-btn" id="signupSubmitBtn">
-                        <i class="fas fa-user-plus"></i> Create Account
-                    </button>
-                    <div class="form-footer">
-                        Already have an account? <a href="#">Log in</a>
-                    </div>
-                </form>
-            </div>
-            <div class="success-message" id="signupSuccess">
-                <i class="fas fa-check-circle"></i>
-                <h3>You're all set!</h3>
-                <p>Welcome to LoveMatch. Check your email to verify your account.</p>
-                <button class="submit-btn" style="margin-top:20px;" id="successCloseBtn">Continue</button>
-            </div>
-        </div>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
+  </nav>
 
-    <!-- ===== DATE PICKER MODAL ===== -->
-    <div class="modal-overlay date-picker-modal" id="datePickerModal">
-        <div class="modal">
-            <button class="modal-close" id="closeDatePickerBtn">&times;</button>
-            <h2><i class="fas fa-calendar-plus" style="color:#f59e0b;"></i> Schedule a Meeting</h2>
-            <p class="subtitle">Pick a date for your blind date! Once scheduled, you'll see each other's photos.</p>
+  <!-- ===== SIGN UP MODAL ===== -->
+  <div class="modal-overlay" id="signupModal">
+    <div class="modal">
+      <button class="modal-close" id="closeSignupBtn">&times;</button>
+      <div id="signupFormContainer">
+        <h2><i class="fas fa-heart"></i> Join LoveMatch</h2>
+        <p class="subtitle">Create your account and start your blind‑date journey.</p>
+        <form id="signupForm" method="POST" action="https://formspree.io/f/xzdljqlv">
+          <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" name="name" placeholder="e.g. Alex Johnson" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" required />
+          </div>
+          <div class="form-row">
             <div class="form-group">
-                <label for="meetingDate">Meeting Date</label>
-                <input type="date" id="meetingDate" min="" />
+              <label for="password">Password</label>
+              <input type="password" id="password" name="password" placeholder="••••••••" required minlength="6" />
             </div>
-            <button class="submit-btn" id="confirmMeetingBtn" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
-                <i class="fas fa-calendar-check"></i> Schedule Meeting
-            </button>
-            <input type="hidden" id="meetingUserId" value="" />
-        </div>
+            <div class="form-group">
+              <label for="gender">Gender</label>
+              <input type="text" id="gender" name="gender" placeholder="e.g. Female, Male" />
+            </div>
+          </div>
+          <button type="submit" class="submit-btn" id="signupSubmitBtn">
+            <i class="fas fa-user-plus"></i> Create Account
+          </button>
+          <div class="form-footer">
+            Already have an account? <a href="#">Log in</a>
+          </div>
+        </form>
+      </div>
+      <div class="success-message" id="signupSuccess">
+        <i class="fas fa-check-circle"></i>
+        <h3>You're all set!</h3>
+        <p>Welcome to LoveMatch. Check your email to verify your account.</p>
+        <button class="submit-btn" style="margin-top:20px;" id="successCloseBtn">Continue</button>
+      </div>
     </div>
+  </div>
 
-    <!-- ===== CHAT PANEL ===== -->
-    <div class="chat-panel-overlay" id="chatPanel">
-        <div class="chat-panel">
-            <div class="chat-panel-header">
-                <div class="chat-title">
-                    <i class="fas fa-comment-dots" style="color:var(--primary);font-size:1.4rem;"></i>
-                    <span style="font-weight:700;font-size:1.1rem;">Messages</span>
-                </div>
-                <button class="close-chat" id="closeChatBtn">&times;</button>
-            </div>
-
-            <div class="chat-panel-matches" id="chatMatchesList">
-                <div class="no-chat-matches">💬 No matches yet. Start liking!</div>
-            </div>
-
-            <div class="chat-messages" id="chatMessages">
-                <div class="empty-chat">
-                    <i class="fas fa-comment-dots"></i>
-                    <p>Select a match to start chatting</p>
-                </div>
-            </div>
-
-            <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Type a message..." disabled />
-                <button class="send-btn" id="chatSendBtn" disabled>
-                    <i class="fas fa-paper-plane"></i> Send
-                </button>
-            </div>
-        </div>
+  <!-- ===== DATE PICKER MODAL ===== -->
+  <div class="modal-overlay date-picker-modal" id="datePickerModal">
+    <div class="modal">
+      <button class="modal-close" id="closeDatePickerBtn">&times;</button>
+      <h2><i class="fas fa-calendar-plus" style="color:var(--accent-gold);"></i> Schedule a Meeting</h2>
+      <p class="subtitle">Pick a date for your blind date. Photos will be revealed on that day.</p>
+      <div class="form-group">
+        <label for="meetingDate">Meeting Date</label>
+        <input type="date" id="meetingDate" min="" />
+      </div>
+      <button class="submit-btn" id="confirmMeetingBtn" style="background:linear-gradient(135deg,var(--accent-gold),#D97706);">
+        <i class="fas fa-calendar-check"></i> Schedule Meeting
+      </button>
+      <input type="hidden" id="meetingUserId" value="" />
     </div>
+  </div>
 
-    <!-- ===== HERO ===== -->
-    <section class="hero" id="discover">
-        <div class="hero-content">
-            <span class="badge"><i class="fas fa-sparkles"></i> 10,000+ happy matches</span>
-            <h1>
-                Blind dating <br />
-                <span class="highlight">with a twist</span>
-            </h1>
-            <p>
-                Photos stay hidden until you schedule a meeting. Connect deeply,
-                chat with your matches, and reveal each other on the big day.
-            </p>
-            <div class="hero-stats">
-                <div class="stat">
-                    <div class="number">12k+</div>
-                    <div class="label">Active users</div>
-                </div>
-                <div class="stat">
-                    <div class="number">4.9★</div>
-                    <div class="label">Rating</div>
-                </div>
-                <div class="stat">
-                    <div class="number">3.2k</div>
-                    <div class="label">Matches made</div>
-                </div>
-            </div>
+  <!-- ===== CHAT PANEL ===== -->
+  <div class="chat-panel-overlay" id="chatPanel">
+    <div class="chat-panel">
+      <div class="chat-panel-header">
+        <div class="chat-title">
+          <i class="fas fa-comment-dots" style="color:var(--primary);font-size:1.2rem;"></i>
+          <span style="font-weight:700;font-size:1rem;">Messages</span>
         </div>
-        <div class="hero-illustration">
-            <div class="floating-cards">
-                <div class="card-sample">
-                    <span class="card-label"><i class="fas fa-lock"></i> Photo hidden</span>
-                </div>
-                <div class="card-sample">
-                    <span class="card-label"><i class="fas fa-calendar"></i> Meeting: 12/20</span>
-                </div>
-                <div class="card-sample">
-                    <span class="card-label"><i class="fas fa-heart" style="color:#ff6b8a;"></i> 92% match</span>
-                </div>
-            </div>
-        </div>
-    </section>
+        <button class="close-chat" id="closeChatBtn">&times;</button>
+      </div>
 
-    <!-- ===== SECTION TITLE + FILTERS ===== -->
-    <div class="section-title">
-        <div>
-            <h2><i class="fas fa-users"></i> Discover <span class="sub">people near you</span></h2>
+      <div class="chat-panel-matches" id="chatMatchesList">
+        <div class="no-chat-matches">💬 No matches yet. Start liking!</div>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <div class="empty-chat">
+          <i class="fas fa-comment-dots"></i>
+          <p>Select a match to start chatting</p>
         </div>
-        <div class="filter-group" id="filterGroup">
-            <button class="active-filter" data-filter="all">All</button>
-            <button data-filter="female">Women</button>
-            <button data-filter="male">Men</button>
-            <button data-filter="non-binary">Non‑binary</button>
-        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <input type="text" id="chatInput" placeholder="Type a message..." disabled />
+        <button class="send-btn" id="chatSendBtn" disabled>
+          <i class="fas fa-paper-plane"></i> Send
+        </button>
+      </div>
     </div>
+  </div>
 
-    <!-- ===== CARDS GRID ===== -->
-    <div class="cards-grid" id="cardsGrid">
-        <!-- Cards will be rendered by JavaScript -->
-    </div>
-
-    <!-- ===== MATCHES BANNER ===== -->
-    <div class="matches-banner" id="matches">
-        <div class="inner">
-            <div class="left">
-                <i class="fas fa-heart"></i>
-                <span class="count" id="matchCount">0</span>
-                <span class="label">matches</span>
-            </div>
-            <div class="matches-list" id="matchesList">
-                <span class="no-matches">❤️ Swipe right to match!</span>
-            </div>
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="discover">
+    <div class="hero-content">
+      <span class="badge"><i class="fas fa-sparkles"></i> 10,000+ happy matches</span>
+      <h1>
+        Blind dating <br />
+        <span class="highlight">with a twist</span>
+      </h1>
+      <p>
+        Photos stay hidden until you schedule a meeting. Connect deeply,
+        chat with your matches, and reveal each other on the big day.
+      </p>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="number">12k+</div>
+          <div class="label">Active users</div>
         </div>
+        <div class="stat">
+          <div class="number">4.9★</div>
+          <div class="label">Rating</div>
+        </div>
+        <div class="stat">
+          <div class="number">3.2k</div>
+          <div class="label">Matches made</div>
+        </div>
+      </div>
     </div>
+    <div class="hero-illustration">
+      <div class="floating-cards">
+        <div class="card-sample">
+          <span class="card-label"><i class="fas fa-lock"></i> Photo hidden</span>
+        </div>
+        <div class="card-sample">
+          <span class="card-label"><i class="fas fa-calendar"></i> Meeting: 12/20</span>
+        </div>
+        <div class="card-sample">
+          <span class="card-label"><i class="fas fa-heart" style="color:var(--secondary);"></i> 92% match</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <!-- ===== TOAST CONTAINER ===== -->
-    <div class="toast-container" id="toastContainer"></div>
+  <!-- ===== SECTION TITLE + FILTERS ===== -->
+  <div class="section-title">
+    <div>
+      <h2><i class="fas fa-users"></i> Discover <span class="sub">people near you</span></h2>
+    </div>
+    <div class="filter-group" id="filterGroup">
+      <button class="active-filter" data-filter="all">All</button>
+      <button data-filter="female">Women</button>
+      <button data-filter="male">Men</button>
+      <button data-filter="non-binary">Non‑binary</button>
+    </div>
+  </div>
+
+  <!-- ===== CARDS GRID ===== -->
+  <div class="cards-grid" id="cardsGrid"></div>
+
+  <!-- ===== MATCHES BANNER ===== -->
+  <div class="matches-banner" id="matches">
+    <div class="inner">
+      <div class="left">
+        <i class="fas fa-heart"></i>
+        <span class="count" id="matchCount">0</span>
+        <span class="label">matches</span>
+      </div>
+      <div class="matches-list" id="matchesList">
+        <span class="no-matches">❤️ Swipe right to match!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST CONTAINER ===== -->
+  <div class="toast-container" id="toastContainer"></div>
 
 
-    <!-- ============================================================ -->
-    <!-- ===== JAVASCRIPT ===== -->
-    <script>
-        (function() {
-            'use strict';
+  <!-- ============================================================ -->
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+    (function() {
+      'use strict';
 
-            // =============================================================
-            // 1.  SAMPLE DATA
-            // =============================================================
-            const users = [{
-                id: 1,
-                name: 'Emma',
-                age: 26,
-                gender: 'female',
-                location: 'Brooklyn, NY',
-                bio: '🌿 Plant mom | 📸 amateur photographer | ☕ coffee addict',
-                tags: ['Art', 'Nature', 'Coffee'],
-                image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=500&fit=crop&crop=face&q=80',
-                verified: true
-            }, {
-                id: 2,
-                name: 'James',
-                age: 29,
-                gender: 'male',
-                location: 'Austin, TX',
-                bio: '🎸 Guitarist & songwriter. Love hiking and craft beer.',
-                tags: ['Music', 'Hiking', 'Beer'],
-                image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop&crop=face&q=80',
-                verified: false
-            }, {
-                id: 3,
-                name: 'Sophia',
-                age: 24,
-                gender: 'female',
-                location: 'Los Angeles, CA',
-                bio: '✨ Digital artist & yogi. Dreaming of traveling the world.',
-                tags: ['Art', 'Yoga', 'Travel'],
-                image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=500&fit=crop&crop=face&q=80',
-                verified: true
-            }, {
-                id: 4,
-                name: 'Liam',
-                age: 31,
-                gender: 'male',
-                location: 'Chicago, IL',
-                bio: '🏀 Sports fan | 💻 software engineer | 🐕 dog dad',
-                tags: ['Sports', 'Tech', 'Dogs'],
-                image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=500&fit=crop&crop=face&q=80',
-                verified: false
-            }, {
-                id: 5,
-                name: 'Aria',
-                age: 27,
-                gender: 'female',
-                location: 'Miami, FL',
-                bio: '🌊 Beach lover & salsa dancer. Let\'s dance!',
-                tags: ['Dance', 'Beach', 'Music'],
-                image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=500&fit=crop&crop=face&q=80',
-                verified: true
-            }, {
-                id: 6,
-                name: 'Noah',
-                age: 28,
-                gender: 'male',
-                location: 'Seattle, WA',
-                bio: '📚 Bookworm | ☕ pour-over enthusiast | 🏔️ hiker',
-                tags: ['Books', 'Coffee', 'Hiking'],
-                image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=500&fit=crop&crop=face&q=80',
-                verified: false
-            }, {
-                id: 7,
-                name: 'Maya',
-                age: 25,
-                gender: 'non-binary',
-                location: 'Portland, OR',
-                bio: '🎨 Queer artist & illustrator. They/them. Love cats.',
-                tags: ['Art', 'Cats', 'Queer'],
-                image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=500&fit=crop&crop=face&q=80',
-                verified: true
-            }, {
-                id: 8,
-                name: 'Oliver',
-                age: 30,
-                gender: 'male',
-                location: 'Denver, CO',
-                bio: '🏂 Snowboarder | 🍳 brunch enthusiast | 🎮 gamer',
-                tags: ['Snow', 'Brunch', 'Gaming'],
-                image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop&crop=face&q=80',
-                verified: false
-            }, {
-                id: 9,
-                name: 'Chloe',
-                age: 23,
-                gender: 'female',
-                location: 'Nashville, TN',
-                bio: '🎤 Singer-songwriter. Loves vintage fashion & sunsets.',
-                tags: ['Music', 'Fashion', 'Sunsets'],
-                image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=500&fit=crop&crop=face&q=80',
-                verified: true
-            }];
+      // =============================================================
+      // 1.  SAMPLE DATA
+      // =============================================================
+      const users = [{
+        id: 1,
+        name: 'Emma',
+        age: 26,
+        gender: 'female',
+        location: 'Brooklyn, NY',
+        bio: '🌿 Plant mom | 📸 amateur photographer | ☕ coffee addict',
+        tags: ['Art', 'Nature', 'Coffee'],
+        image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=500&fit=crop&crop=face&q=80',
+        verified: true
+      }, {
+        id: 2,
+        name: 'James',
+        age: 29,
+        gender: 'male',
+        location: 'Austin, TX',
+        bio: '🎸 Guitarist & songwriter. Love hiking and craft beer.',
+        tags: ['Music', 'Hiking', 'Beer'],
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop&crop=face&q=80',
+        verified: false
+      }, {
+        id: 3,
+        name: 'Sophia',
+        age: 24,
+        gender: 'female',
+        location: 'Los Angeles, CA',
+        bio: '✨ Digital artist & yogi. Dreaming of traveling the world.',
+        tags: ['Art', 'Yoga', 'Travel'],
+        image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=500&fit=crop&crop=face&q=80',
+        verified: true
+      }, {
+        id: 4,
+        name: 'Liam',
+        age: 31,
+        gender: 'male',
+        location: 'Chicago, IL',
+        bio: '🏀 Sports fan | 💻 software engineer | 🐕 dog dad',
+        tags: ['Sports', 'Tech', 'Dogs'],
+        image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=500&fit=crop&crop=face&q=80',
+        verified: false
+      }, {
+        id: 5,
+        name: 'Aria',
+        age: 27,
+        gender: 'female',
+        location: 'Miami, FL',
+        bio: '🌊 Beach lover & salsa dancer. Let\'s dance!',
+        tags: ['Dance', 'Beach', 'Music'],
+        image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=500&fit=crop&crop=face&q=80',
+        verified: true
+      }, {
+        id: 6,
+        name: 'Noah',
+        age: 28,
+        gender: 'male',
+        location: 'Seattle, WA',
+        bio: '📚 Bookworm | ☕ pour-over enthusiast | 🏔️ hiker',
+        tags: ['Books', 'Coffee', 'Hiking'],
+        image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=500&fit=crop&crop=face&q=80',
+        verified: false
+      }, {
+        id: 7,
+        name: 'Maya',
+        age: 25,
+        gender: 'non-binary',
+        location: 'Portland, OR',
+        bio: '🎨 Queer artist & illustrator. They/them. Love cats.',
+        tags: ['Art', 'Cats', 'Queer'],
+        image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=500&fit=crop&crop=face&q=80',
+        verified: true
+      }, {
+        id: 8,
+        name: 'Oliver',
+        age: 30,
+        gender: 'male',
+        location: 'Denver, CO',
+        bio: '🏂 Snowboarder | 🍳 brunch enthusiast | 🎮 gamer',
+        tags: ['Snow', 'Brunch', 'Gaming'],
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop&crop=face&q=80',
+        verified: false
+      }, {
+        id: 9,
+        name: 'Chloe',
+        age: 23,
+        gender: 'female',
+        location: 'Nashville, TN',
+        bio: '🎤 Singer-songwriter. Loves vintage fashion & sunsets.',
+        tags: ['Music', 'Fashion', 'Sunsets'],
+        image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=500&fit=crop&crop=face&q=80',
+        verified: true
+      }];
 
-            // =============================================================
-            // 2.  STATE
-            // =============================================================
-            let currentFilter = 'all';
-            let matches = []; // array of user IDs we've matched with
-            let likedSet = new Set();
-            let passedSet = new Set();
+      // =============================================================
+      // 2.  STATE
+      // =============================================================
+      let currentFilter = 'all';
+      let matches = []; // matched user IDs
+      let likedSet = new Set();
+      let passedSet = new Set();
 
-            // Meetings: { userId: '2025-12-20' }
-            let meetings = {};
+      // Meetings: { userId: '2025-12-20' }
+      let meetings = {};
 
-            // Messages: { userId: [ { from: 'me'|'them', text, time } ] }
-            let messages = {};
+      // Messages: { userId: [ { from: 'me'|'them', text, time } ] }
+      let messages = {};
 
-            // Current chat partner
-            let currentChatPartner = null;
+      let currentChatPartner = null;
+      let typingTimeout = null;
 
-            // =============================================================
-            // 3.  DOM REFS
-            // =============================================================
-            const grid = document.getElementById('cardsGrid');
-            const matchCountEl = document.getElementById('matchCount');
-            const matchesListEl = document.getElementById('matchesList');
-            const toastContainer = document.getElementById('toastContainer');
-            const filterButtons = document.querySelectorAll('#filterGroup button');
-            const hamburger = document.getElementById('hamburger');
-            const navLinks = document.getElementById('navLinks');
+      // =============================================================
+      // 3.  DOM REFS
+      // =============================================================
+      const grid = document.getElementById('cardsGrid');
+      const matchCountEl = document.getElementById('matchCount');
+      const matchesListEl = document.getElementById('matchesList');
+      const toastContainer = document.getElementById('toastContainer');
+      const filterButtons = document.querySelectorAll('#filterGroup button');
+      const hamburger = document.getElementById('hamburger');
+      const navLinks = document.getElementById('navLinks');
 
-            // Signup
-            const signupModal = document.getElementById('signupModal');
-            const openSignupBtn = document.getElementById('openSignupBtn');
-            const closeSignupBtn = document.getElementById('closeSignupBtn');
-            const successCloseBtn = document.getElementById('successCloseBtn');
-            const signupForm = document.getElementById('signupForm');
-            const formContainer = document.getElementById('signupFormContainer');
-            const successMessage = document.getElementById('signupSuccess');
-            const submitBtn = document.getElementById('signupSubmitBtn');
+      // Signup
+      const signupModal = document.getElementById('signupModal');
+      const openSignupBtn = document.getElementById('openSignupBtn');
+      const closeSignupBtn = document.getElementById('closeSignupBtn');
+      const successCloseBtn = document.getElementById('successCloseBtn');
+      const signupForm = document.getElementById('signupForm');
+      const formContainer = document.getElementById('signupFormContainer');
+      const successMessage = document.getElementById('signupSuccess');
+      const submitBtn = document.getElementById('signupSubmitBtn');
 
-            // Date picker
-            const datePickerModal = document.getElementById('datePickerModal');
-            const closeDatePickerBtn = document.getElementById('closeDatePickerBtn');
-            const meetingDateInput = document.getElementById('meetingDate');
-            const meetingUserIdInput = document.getElementById('meetingUserId');
-            const confirmMeetingBtn = document.getElementById('confirmMeetingBtn');
+      // Date picker
+      const datePickerModal = document.getElementById('datePickerModal');
+      const closeDatePickerBtn = document.getElementById('closeDatePickerBtn');
+      const meetingDateInput = document.getElementById('meetingDate');
+      const meetingUserIdInput = document.getElementById('meetingUserId');
+      const confirmMeetingBtn = document.getElementById('confirmMeetingBtn');
 
-            // Chat
-            const chatPanel = document.getElementById('chatPanel');
-            const openChatBtn = document.getElementById('openChatBtn');
-            const closeChatBtn = document.getElementById('closeChatBtn');
-            const chatMatchesList = document.getElementById('chatMatchesList');
-            const chatMessages = document.getElementById('chatMessages');
-            const chatInput = document.getElementById('chatInput');
-            const chatSendBtn = document.getElementById('chatSendBtn');
-            const chatBadgeDot = document.getElementById('chatBadgeDot');
+      // Chat
+      const chatPanel = document.getElementById('chatPanel');
+      const openChatBtn = document.getElementById('openChatBtn');
+      const closeChatBtn = document.getElementById('closeChatBtn');
+      const chatMatchesList = document.getElementById('chatMatchesList');
+      const chatMessages = document.getElementById('chatMessages');
+      const chatInput = document.getElementById('chatInput');
+      const chatSendBtn = document.getElementById('chatSendBtn');
+      const chatBadgeDot = document.getElementById('chatBadgeDot');
 
-            // =============================================================
-            // 4.  RENDER CARDS
-            // =============================================================
-            function renderCards() {
-                let filtered = users;
+      // =============================================================
+      // 4.  RENDER CARDS
+      // =============================================================
+      function renderCards() {
+        let filtered = users;
 
-                if (currentFilter !== 'all') {
-                    filtered = users.filter(u => u.gender === currentFilter);
-                }
+        if (currentFilter !== 'all') {
+          filtered = users.filter(u => u.gender === currentFilter);
+        }
 
-                if (filtered.length === 0) {
-                    grid.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-user-slash"></i>
-                            <h3>No profiles found</h3>
-                            <p>Try adjusting your filter or check back later.</p>
-                        </div>
-                    `;
-                    return;
-                }
+        if (filtered.length === 0) {
+          grid.innerHTML = `
+              <div class="empty-state">
+                <i class="fas fa-user-slash"></i>
+                <h3>No profiles found</h3>
+                <p>Try adjusting your filter or check back later.</p>
+              </div>
+            `;
+          return;
+        }
 
-                let html = '';
-                for (const user of filtered) {
-                    const isLiked = likedSet.has(user.id);
-                    const isPassed = passedSet.has(user.id);
-                    const isMatch = matches.includes(user.id);
-                    const hasMeeting = meetings[user.id] !== undefined;
-                    const meetingDate = meetings[user.id] || null;
-                    const photoRevealed = isMatch && hasMeeting;
+        let html = '';
+        for (const user of filtered) {
+          const isLiked = likedSet.has(user.id);
+          const isPassed = passedSet.has(user.id);
+          const isMatch = matches.includes(user.id);
+          const hasMeeting = meetings[user.id] !== undefined;
+          const meetingDate = meetings[user.id] || null;
+          const photoRevealed = isMatch && hasMeeting;
 
-                    const verifiedBadge = user.verified
-                        ? `<span class="verified"><i class="fas fa-check-circle"></i> Verified</span>`
-                        : '';
+          const verifiedBadge = user.verified ?
+            `<span class="verified"><i class="fas fa-check-circle"></i> Verified</span>` :
+            '';
 
-                    const tagsHtml = user.tags.map(t => `<span>#${t.toLowerCase()}</span>`).join('');
+          const tagsHtml = user.tags.map(t => `<span>#${t.toLowerCase()}</span>`).join('');
 
-                    // Photo overlay
-                    let overlayHtml = '';
-                    if (!photoRevealed) {
-                        overlayHtml = `
-                            <div class="photo-hidden-overlay" id="overlay-${user.id}">
-                                <i class="fas fa-lock"></i>
-                                <span class="lock-label">Photo hidden</span>
-                                ${isMatch ? `<span class="meeting-badge">📅 Schedule a meeting to reveal</span>` : `<span class="meeting-badge">💕 Match to unlock</span>`}
-                            </div>
-                        `;
-                    } else {
-                        overlayHtml = `
-                            <div class="photo-hidden-overlay revealed" id="overlay-${user.id}">
-                                <i class="fas fa-lock"></i>
-                                <span class="lock-label">Photo hidden</span>
-                            </div>
-                        `;
-                    }
+          // Photo overlay
+          let overlayHtml = '';
+          if (!photoRevealed) {
+            overlayHtml = `
+                <div class="photo-hidden-overlay" id="overlay-${user.id}">
+                  <i class="fas fa-lock"></i>
+                  <span class="lock-label">Photo hidden</span>
+                  ${isMatch ? `<span class="meeting-badge">📅 Schedule a meeting to reveal</span>` : `<span class="meeting-badge">💕 Match to unlock</span>`}
+                </div>
+              `;
+          } else {
+            overlayHtml = `
+                <div class="photo-hidden-overlay revealed" id="overlay-${user.id}">
+                  <i class="fas fa-lock"></i>
+                  <span class="lock-label">Photo hidden</span>
+                </div>
+              `;
+          }
 
-                    // Buttons
-                    let likeBtnHtml;
-                    if (isLiked) {
-                        likeBtnHtml =
-                            `<button class="btn-like liked" disabled><i class="fas fa-check"></i> Liked</button>`;
-                    } else if (isPassed) {
-                        likeBtnHtml =
-                            `<button class="btn-like" disabled style="opacity:0.4;cursor:not-allowed;"><i class="fas fa-heart"></i> Like</button>`;
-                    } else {
-                        likeBtnHtml = `<button class="btn-like" data-id="${user.id}"><i class="fas fa-heart"></i> Like</button>`;
-                    }
+          // Buttons
+          let likeBtnHtml;
+          if (isLiked) {
+            likeBtnHtml =
+              `<button class="btn-like liked" disabled><i class="fas fa-check"></i> Liked</button>`;
+          } else if (isPassed) {
+            likeBtnHtml =
+              `<button class="btn-like" disabled style="opacity:0.4;cursor:not-allowed;"><i class="fas fa-heart"></i> Like</button>`;
+          } else {
+            likeBtnHtml =
+              `<button class="btn-like" data-id="${user.id}"><i class="fas fa-heart"></i> Like</button>`;
+          }
 
-                    const passBtnHtml = isPassed ?
-                        `<button class="btn-pass passed" disabled><i class="fas fa-times"></i> Passed</button>` :
-                        `<button class="btn-pass" data-id="${user.id}"><i class="fas fa-times"></i> Pass</button>`;
+          const passBtnHtml = isPassed ?
+            `<button class="btn-pass passed" disabled><i class="fas fa-times"></i> Passed</button>` :
+            `<button class="btn-pass" data-id="${user.id}"><i class="fas fa-times"></i> Pass</button>`;
 
-                    let meetingBtnHtml = '';
-                    if (isMatch) {
-                        if (hasMeeting) {
-                            meetingBtnHtml =
-                                `<button class="btn-meeting scheduled" disabled><i class="fas fa-calendar-check"></i> Meeting: ${meetingDate}</button>`;
-                        } else {
-                            meetingBtnHtml =
-                                `<button class="btn-meeting" data-id="${user.id}"><i class="fas fa-calendar-plus"></i> Schedule</button>`;
-                        }
-                    } else {
-                        meetingBtnHtml =
-                            `<button class="btn-meeting" disabled style="opacity:0.4;cursor:not-allowed;"><i class="fas fa-calendar-plus"></i> Schedule</button>`;
-                    }
-
-                    let chatBtnHtml = '';
-                    if (isMatch) {
-                        chatBtnHtml =
-                            `<button class="btn-chat" data-id="${user.id}"><i class="fas fa-comment"></i> Chat</button>`;
-                    } else {
-                        chatBtnHtml =
-                            `<button class="btn-chat" disabled style="opacity:0.4;cursor:not-allowed;"><i class="fas fa-comment"></i> Chat</button>`;
-                    }
-
-                    // Match badge
-                    let matchBadgeHtml = '';
-                    if (isMatch) {
-                        matchBadgeHtml =
-                            `<div class="match-badge"><i class="fas fa-heart"></i> It's a match!</div>`;
-                    }
-
-                    let meetingInfoHtml = '';
-                    if (isMatch && hasMeeting) {
-                        meetingInfoHtml =
-                            `<div class="meeting-info"><i class="fas fa-calendar-check"></i> Meeting: ${meetingDate} — Photos revealed!</div>`;
-                    }
-
-                    html += `
-                        <div class="profile-card" data-id="${user.id}">
-                            <div class="card-image-wrapper">
-                                <img
-                                    src="${user.image}"
-                                    alt="${user.name}"
-                                    class="card-image"
-                                    loading="lazy"
-                                    onerror="this.src='https://ui-avatars.com/api/?name=${user.name}&background=ff6b8a&color=fff&size=400'"
-                                />
-                                ${overlayHtml}
-                            </div>
-                            <div class="card-body">
-                                <div class="card-header">
-                                    <span class="name">${user.name} <span class="age">${user.age}</span></span>
-                                    ${verifiedBadge}
-                                </div>
-                                <div class="location">
-                                    <i class="fas fa-map-pin"></i> ${user.location}
-                                </div>
-                                <p class="bio">${user.bio}</p>
-                                <div class="tags">${tagsHtml}</div>
-                                ${matchBadgeHtml}
-                                ${meetingInfoHtml}
-                                <div class="card-actions">
-                                    ${likeBtnHtml}
-                                    ${passBtnHtml}
-                                    ${meetingBtnHtml}
-                                    ${chatBtnHtml}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                grid.innerHTML = html;
-
-                // Attach event listeners
-                document.querySelectorAll('.btn-like:not([disabled])').forEach(btn => {
-                    btn.addEventListener('click', handleLike);
-                });
-                document.querySelectorAll('.btn-pass:not([disabled])').forEach(btn => {
-                    btn.addEventListener('click', handlePass);
-                });
-                document.querySelectorAll('.btn-meeting:not([disabled])').forEach(btn => {
-                    btn.addEventListener('click', handleScheduleMeeting);
-                });
-                document.querySelectorAll('.btn-chat:not([disabled])').forEach(btn => {
-                    btn.addEventListener('click', handleOpenChatFromCard);
-                });
+          let meetingBtnHtml = '';
+          if (isMatch) {
+            if (hasMeeting) {
+              meetingBtnHtml =
+                `<button class="btn-meeting scheduled" disabled><i class="fas fa-calendar-check"></i> ${meetingDate}</button>`;
+            } else {
+              meetingBtnHtml =
+                `<button class="btn-meeting" data-id="${user.id}"><i class="fas fa-calendar-plus"></i> Schedule</button>`;
             }
+          } else {
+            meetingBtnHtml =
+              `<button class="btn-meeting" disabled style="opacity:0.4;cursor:not-allowed;"><i class="fas fa-calendar-plus"></i> Schedule</button>`;
+          }
 
-            // =============================================================
-            // 5.  LIKE / PASS
-            // =============================================================
-            function handleLike(e) {
-                const btn = e.currentTarget;
-                const id = parseInt(btn.dataset.id);
-                if (likedSet.has(id) || passedSet.has(id)) return;
+          let chatBtnHtml = '';
+          if (isMatch) {
+            chatBtnHtml =
+              `<button class="btn-chat" data-id="${user.id}"><i class="fas fa-comment"></i> Chat</button>`;
+          } else {
+            chatBtnHtml =
+              `<button class="btn-chat" disabled style="opacity:0.4;cursor:not-allowed;"><i class="fas fa-comment"></i> Chat</button>`;
+          }
 
-                likedSet.add(id);
+          let matchBadgeHtml = '';
+          if (isMatch) {
+            matchBadgeHtml =
+              `<div class="match-badge"><i class="fas fa-heart"></i> It's a match!</div>`;
+          }
 
-                const isMatch = Math.random() < 0.35;
+          let meetingInfoHtml = '';
+          if (isMatch && hasMeeting) {
+            meetingInfoHtml =
+              `<div class="meeting-info"><i class="fas fa-calendar-check"></i> Meeting: ${meetingDate} — Photos revealed!</div>`;
+          }
 
-                if (isMatch) {
-                    if (!matches.includes(id)) {
-                        matches.push(id);
-                        showToast(`💞 It's a match with ${getUser(id).name}!`, 'match');
-                        updateMatchesUI();
-                        updateChatBadge();
-                    }
-                } else {
-                    showToast(`❤️ You liked ${getUser(id).name}!`, 'like');
-                }
+          html += `
+              <div class="profile-card" data-id="${user.id}">
+                <div class="card-image-wrapper">
+                  <img
+                    src="${user.image}"
+                    alt="${user.name}"
+                    class="card-image"
+                    loading="lazy"
+                    onerror="this.src='https://ui-avatars.com/api/?name=${user.name}&background=6C5CE7&color=fff&size=400'"
+                  />
+                  ${overlayHtml}
+                </div>
+                <div class="card-body">
+                  <div class="card-header">
+                    <span class="name">${user.name} <span class="age">${user.age}</span></span>
+                    ${verifiedBadge}
+                  </div>
+                  <div class="location">
+                    <i class="fas fa-map-pin"></i> ${user.location}
+                  </div>
+                  <p class="bio">${user.bio}</p>
+                  <div class="tags">${tagsHtml}</div>
+                  ${matchBadgeHtml}
+                  ${meetingInfoHtml}
+                  <div class="card-actions">
+                    ${likeBtnHtml}
+                    ${passBtnHtml}
+                    ${meetingBtnHtml}
+                    ${chatBtnHtml}
+                  </div>
+                </div>
+              </div>
+            `;
+        }
 
-                renderCards();
+        grid.innerHTML = html;
+
+        // Attach event listeners
+        document.querySelectorAll('.btn-like:not([disabled])').forEach(btn => {
+          btn.addEventListener('click', handleLike);
+        });
+        document.querySelectorAll('.btn-pass:not([disabled])').forEach(btn => {
+          btn.addEventListener('click', handlePass);
+        });
+        document.querySelectorAll('.btn-meeting:not([disabled])').forEach(btn => {
+          btn.addEventListener('click', handleScheduleMeeting);
+        });
+        document.querySelectorAll('.btn-chat:not([disabled])').forEach(btn => {
+          btn.addEventListener('click', handleOpenChatFromCard);
+        });
+
+        // Click on image to open profile detail (just for show)
+        document.querySelectorAll('.card-image-wrapper').forEach(wrapper => {
+          wrapper.addEventListener('click', function() {
+            const card = this.closest('.profile-card');
+            const id = parseInt(card.dataset.id);
+            const user = getUser(id);
+            if (user) {
+              showToast(`👤 ${user.name}, ${user.age} · ${user.location}`, 'like');
             }
+          });
+        });
+      }
 
-            function handlePass(e) {
-                const btn = e.currentTarget;
-                const id = parseInt(btn.dataset.id);
-                if (passedSet.has(id) || likedSet.has(id)) return;
+      // =============================================================
+      // 5.  LIKE / PASS
+      // =============================================================
+      function handleLike(e) {
+        const btn = e.currentTarget;
+        const id = parseInt(btn.dataset.id);
+        if (likedSet.has(id) || passedSet.has(id)) return;
 
-                passedSet.add(id);
-                showToast(`👋 Passed on ${getUser(id).name}`, 'pass');
-                renderCards();
-            }
+        likedSet.add(id);
 
-            // =============================================================
-            // 6.  MEETING SCHEDULING
-            // =============================================================
-            function handleScheduleMeeting(e) {
-                const btn = e.currentTarget;
-                const id = parseInt(btn.dataset.id);
-                if (!matches.includes(id)) return;
-                if (meetings[id]) return;
+        const isMatch = Math.random() < 0.35;
 
-                // Open date picker
-                meetingUserIdInput.value = id;
-                // Set min date to tomorrow
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                meetingDateInput.min = tomorrow.toISOString().split('T')[0];
-                meetingDateInput.value = '';
-                datePickerModal.classList.add('open');
-                document.body.style.overflow = 'hidden';
-            }
+        if (isMatch) {
+          if (!matches.includes(id)) {
+            matches.push(id);
+            showToast(`💞 It's a match with ${getUser(id).name}!`, 'match');
+            updateMatchesUI();
+            updateChatBadge();
+          }
+        } else {
+          showToast(`❤️ You liked ${getUser(id).name}!`, 'like');
+        }
 
-            function confirmMeeting() {
-                const userId = parseInt(meetingUserIdInput.value);
-                const date = meetingDateInput.value;
-                if (!date) {
-                    showToast('❌ Please select a date for your meeting.', 'pass');
-                    return;
-                }
-                if (!userId || !matches.includes(userId)) {
-                    showToast('❌ Invalid user.', 'pass');
-                    return;
-                }
+        renderCards();
+      }
 
-                meetings[userId] = date;
-                datePickerModal.classList.remove('open');
-                document.body.style.overflow = '';
+      function handlePass(e) {
+        const btn = e.currentTarget;
+        const id = parseInt(btn.dataset.id);
+        if (passedSet.has(id) || likedSet.has(id)) return;
 
-                showToast(`📅 Meeting scheduled with ${getUser(userId).name} on ${date}! Photos revealed.`, 'meeting');
-                renderCards();
-                updateMatchesUI();
-                updateChatBadge();
+        passedSet.add(id);
+        showToast(`👋 Passed on ${getUser(id).name}`, 'pass');
+        renderCards();
+      }
 
-                // Auto-open chat
-                setTimeout(() => {
-                    openChatWithUser(userId);
-                }, 600);
-            }
+      // =============================================================
+      // 6.  MEETING SCHEDULING
+      // =============================================================
+      function handleScheduleMeeting(e) {
+        const btn = e.currentTarget;
+        const id = parseInt(btn.dataset.id);
+        if (!matches.includes(id)) return;
+        if (meetings[id]) return;
 
-            // =============================================================
-            // 7.  CHAT SYSTEM
-            // =============================================================
-            function openChatWithUser(userId) {
-                const user = getUser(userId);
-                if (!user || !matches.includes(userId)) {
-                    showToast('❌ You can only chat with your matches.', 'pass');
-                    return;
-                }
+        meetingUserIdInput.value = id;
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        meetingDateInput.min = tomorrow.toISOString().split('T')[0];
+        meetingDateInput.value = '';
+        datePickerModal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
 
-                currentChatPartner = userId;
-                chatPanel.classList.add('open');
-                document.body.style.overflow = 'hidden';
+      function confirmMeeting() {
+        const userId = parseInt(meetingUserIdInput.value);
+        const date = meetingDateInput.value;
+        if (!date) {
+          showToast('❌ Please select a date for your meeting.', 'pass');
+          return;
+        }
+        if (!userId || !matches.includes(userId)) {
+          showToast('❌ Invalid user.', 'pass');
+          return;
+        }
 
-                // Ensure messages array exists
-                if (!messages[userId]) {
-                    messages[userId] = [];
-                }
+        meetings[userId] = date;
+        datePickerModal.classList.remove('open');
+        document.body.style.overflow = '';
 
-                renderChatMessages(userId);
-                renderChatMatches();
-                chatInput.disabled = false;
-                chatSendBtn.disabled = false;
-                chatInput.focus();
+        showToast(`📅 Meeting scheduled with ${getUser(userId).name} on ${date}! Photos revealed.`, 'meeting');
+        renderCards();
+        updateMatchesUI();
+        updateChatBadge();
 
-                // Update badge
-                updateChatBadge();
-            }
+        // Auto-open chat
+        setTimeout(() => {
+          openChatWithUser(userId);
+        }, 600);
+      }
 
-            function renderChatMessages(userId) {
-                const user = getUser(userId);
-                if (!user) return;
+      // =============================================================
+      // 7.  CHAT SYSTEM
+      // =============================================================
+      function openChatWithUser(userId) {
+        const user = getUser(userId);
+        if (!user || !matches.includes(userId)) {
+          showToast('❌ You can only chat with your matches.', 'pass');
+          return;
+        }
 
-                const msgs = messages[userId] || [];
-                const container = chatMessages;
+        currentChatPartner = userId;
+        chatPanel.classList.add('open');
+        document.body.style.overflow = 'hidden';
 
-                if (msgs.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-chat">
-                            <i class="fas fa-comment-dots"></i>
-                            <p>Say hello to ${user.name}! 👋</p>
-                        </div>
-                    `;
-                    return;
-                }
+        if (!messages[userId]) {
+          messages[userId] = [];
+        }
 
-                let html = '';
-                for (const msg of msgs) {
-                    const cls = msg.from === 'me' ? 'sent' : 'received';
-                    const time = msg.time || 'Now';
-                    html += `
-                        <div class="message ${cls}">
-                            ${msg.text}
-                            <span class="msg-time">${time}</span>
-                        </div>
-                    `;
-                }
-                container.innerHTML = html;
-                container.scrollTop = container.scrollHeight;
-            }
+        renderChatMessages(userId);
+        renderChatMatches();
+        chatInput.disabled = false;
+        chatSendBtn.disabled = false;
+        chatInput.focus();
 
-            function renderChatMatches() {
-                const container = chatMatchesList;
+        updateChatBadge();
+      }
 
-                if (matches.length === 0) {
-                    container.innerHTML = `<div class="no-chat-matches">💬 No matches yet. Start liking!</div>`;
-                    return;
-                }
+      function renderChatMessages(userId) {
+        const user = getUser(userId);
+        if (!user) return;
 
-                let html = `<div class="matches-scroll">`;
-                for (const id of matches) {
-                    const user = getUser(id);
-                    if (!user) continue;
-                    const isActive = currentChatPartner === id;
-                    const hasUnread = hasUnreadMessages(id);
-                    html += `
-                        <div class="match-chip ${isActive ? 'active' : ''}" data-id="${id}">
-                            <img src="${user.image}" alt="${user.name}" onerror="this.src='https://ui-avatars.com/api/?name=${user.name}&background=ff6b8a&color=fff&size=80'" />
-                            <span class="chip-name">${user.name}</span>
-                            ${hasUnread ? `<span class="chip-badge">•</span>` : ''}
-                        </div>
-                    `;
-                }
-                html += `</div>`;
-                container.innerHTML = html;
+        const msgs = messages[userId] || [];
+        const container = chatMessages;
 
-                // Click to switch chat
-                container.querySelectorAll('.match-chip').forEach(chip => {
-                    chip.addEventListener('click', function() {
-                        const id = parseInt(this.dataset.id);
-                        if (id === currentChatPartner) return;
-                        openChatWithUser(id);
-                    });
-                });
-            }
+        if (msgs.length === 0) {
+          container.innerHTML = `
+              <div class="empty-chat">
+                <i class="fas fa-comment-dots"></i>
+                <p>Say hello to ${user.name}! 👋</p>
+              </div>
+            `;
+          return;
+        }
 
-            function hasUnreadMessages(userId) {
-                const msgs = messages[userId] || [];
-                // In a real app, we'd track read status. For demo, we consider messages from "them" as unread if chat is not open.
-                if (currentChatPartner === userId) return false;
-                return msgs.some(m => m.from === 'them');
-            }
+        let html = '';
+        for (const msg of msgs) {
+          const cls = msg.from === 'me' ? 'sent' : 'received';
+          const time = msg.time || 'Now';
+          html += `
+              <div class="message ${cls}">
+                ${msg.text}
+                <span class="msg-time">${time}</span>
+              </div>
+            `;
+        }
+        container.innerHTML = html;
+        container.scrollTop = container.scrollHeight;
+      }
 
-            function updateChatBadge() {
-                let unread = 0;
-                for (const id of matches) {
-                    if (hasUnreadMessages(id)) unread++;
-                }
-                if (unread > 0) {
-                    chatBadgeDot.style.display = 'inline-block';
-                } else {
-                    chatBadgeDot.style.display = 'none';
-                }
-            }
+      function renderChatMatches() {
+        const container = chatMatchesList;
 
-            function sendMessage() {
-                const text = chatInput.value.trim();
-                if (!text || currentChatPartner === null) return;
+        if (matches.length === 0) {
+          container.innerHTML = `<div class="no-chat-matches">💬 No matches yet. Start liking!</div>`;
+          return;
+        }
 
-                const userId = currentChatPartner;
-                if (!messages[userId]) messages[userId] = [];
+        let html = `<div class="matches-scroll">`;
+        for (const id of matches) {
+          const user = getUser(id);
+          if (!user) continue;
+          const isActive = currentChatPartner === id;
+          const hasUnread = hasUnreadMessages(id);
+          html += `
+              <div class="match-chip ${isActive ? 'active' : ''}" data-id="${id}">
+                <img src="${user.image}" alt="${user.name}" onerror="this.src='https://ui-avatars.com/api/?name=${user.name}&background=6C5CE7&color=fff&size=80'" />
+                <span class="chip-name">${user.name}</span>
+                ${hasUnread ? `<span class="chip-badge">•</span>` : ''}
+              </div>
+            `;
+        }
+        html += `</div>`;
+        container.innerHTML = html;
 
-                const now = new Date();
-                const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        container.querySelectorAll('.match-chip').forEach(chip => {
+          chip.addEventListener('click', function() {
+            const id = parseInt(this.dataset.id);
+            if (id === currentChatPartner) return;
+            openChatWithUser(id);
+          });
+        });
+      }
 
-                messages[userId].push({
-                    from: 'me',
-                    text: text,
-                    time: timeStr
-                });
+      function hasUnreadMessages(userId) {
+        const msgs = messages[userId] || [];
+        if (currentChatPartner === userId) return false;
+        return msgs.some(m => m.from === 'them');
+      }
 
-                chatInput.value = '';
-                renderChatMessages(userId);
+      function updateChatBadge() {
+        let unread = 0;
+        for (const id of matches) {
+          if (hasUnreadMessages(id)) unread++;
+        }
+        chatBadgeDot.style.display = unread > 0 ? 'inline-block' : 'none';
+      }
 
-                // Simulate reply after 1-3 seconds
-                const delay = 1200 + Math.random() * 1800;
-                setTimeout(() => {
-                    simulateReply(userId);
-                }, delay);
-            }
+      function sendMessage() {
+        const text = chatInput.value.trim();
+        if (!text || currentChatPartner === null) return;
 
-            function simulateReply(userId) {
-                const user = getUser(userId);
-                if (!user) return;
-                if (!messages[userId]) messages[userId] = [];
+        const userId = currentChatPartner;
+        if (!messages[userId]) messages[userId] = [];
 
-                const replies = [
-                    "That's so sweet! 😊",
-                    "I totally agree with you!",
-                    "Tell me more about that!",
-                    "Haha, that's funny 😄",
-                    "I've been thinking the same thing!",
-                    "Can't wait for our meeting! ❤️",
-                    "You're really interesting to talk to.",
-                    "What else do you like to do?",
-                    "That sounds amazing!",
-                    "I'm really glad we matched."
-                ];
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                const reply = replies[Math.floor(Math.random() * replies.length)];
-                const now = new Date();
-                const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        messages[userId].push({
+          from: 'me',
+          text: text,
+          time: timeStr
+        });
 
-                messages[userId].push({
-                    from: 'them',
-                    text: reply,
-                    time: timeStr
-                });
+        chatInput.value = '';
+        renderChatMessages(userId);
+        updateChatBadge();
 
-                // If chat is still open with this user, re-render
-                if (currentChatPartner === userId) {
-                    renderChatMessages(userId);
-                } else {
-                    // Update badge
-                    updateChatBadge();
-                }
+        // Show typing indicator
+        showTypingIndicator(userId);
 
-                // Show toast notification for new message if chat is closed
-                if (currentChatPartner !== userId) {
-                    showToast(`💬 New message from ${user.name}`, 'chat');
-                }
+        // Simulate reply after 1.5-3.5s
+        const delay = 1500 + Math.random() * 2000;
+        if (typingTimeout) clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+          hideTypingIndicator(userId);
+          simulateReply(userId);
+        }, delay);
+      }
 
-                // Re-render matches list to show badge
-                renderChatMatches();
-                updateChatBadge();
-            }
+      function showTypingIndicator(userId) {
+        if (currentChatPartner !== userId) return;
+        const container = chatMessages;
+        // Remove existing typing indicator
+        const existing = container.querySelector('.typing-indicator');
+        if (existing) existing.remove();
 
-            // =============================================================
-            // 8.  CHAT UI HANDLERS
-            // =============================================================
-            function handleOpenChatFromCard(e) {
-                const btn = e.currentTarget;
-                const id = parseInt(btn.dataset.id);
-                if (!matches.includes(id)) return;
-                openChatWithUser(id);
-            }
+        const el = document.createElement('div');
+        el.className = 'typing-indicator';
+        el.innerHTML = `<span>●</span><span>●</span><span>●</span>`;
+        container.appendChild(el);
+        container.scrollTop = container.scrollHeight;
+      }
 
-            // =============================================================
-            // 9.  HELPERS
-            // =============================================================
-            function getUser(id) {
-                return users.find(u => u.id === id);
-            }
+      function hideTypingIndicator(userId) {
+        if (currentChatPartner !== userId) return;
+        const container = chatMessages;
+        const existing = container.querySelector('.typing-indicator');
+        if (existing) existing.remove();
+      }
 
-            // =============================================================
-            // 10. TOAST SYSTEM
-            // =============================================================
-            function showToast(message, type = 'like') {
-                const toast = document.createElement('div');
-                const typeMap = {
-                    'like': { cls: '', icon: 'heart', color: 'var(--primary)' },
-                    'match': { cls: 'toast-match', icon: 'heart', color: '#f59e0b' },
-                    'pass': { cls: '', icon: 'times', color: '#6c757d' },
-                    'meeting': { cls: 'toast-meeting', icon: 'calendar-check', color: '#22c55e' },
-                    'chat': { cls: 'toast-chat', icon: 'comment-dots', color: 'var(--secondary)' },
-                };
-                const info = typeMap[type] || typeMap['like'];
-                toast.className = `toast ${info.cls}`;
+      function simulateReply(userId) {
+        const user = getUser(userId);
+        if (!user) return;
+        if (!messages[userId]) messages[userId] = [];
 
-                toast.innerHTML = `
-                    <i class="fas fa-${info.icon}" style="color:${info.color};"></i>
-                    <span>${message}</span>
-                    <button class="toast-close">&times;</button>
-                `;
+        const replies = [
+          "That's so sweet! 😊",
+          "I totally agree with you!",
+          "Tell me more about that!",
+          "Haha, that's funny 😄",
+          "I've been thinking the same thing!",
+          "Can't wait for our meeting! ❤️",
+          "You're really interesting to talk to.",
+          "What else do you like to do?",
+          "That sounds amazing!",
+          "I'm really glad we matched."
+        ];
+        const reply = replies[Math.floor(Math.random() * replies.length)];
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                toastContainer.appendChild(toast);
-                const timeout = setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3800);
-                toast.querySelector('.toast-close').addEventListener('click', () => {
-                    clearTimeout(timeout);
-                    toast.remove();
-                });
-                while (toastContainer.children.length > 3) {
-                    toastContainer.firstChild.remove();
-                }
-            }
+        messages[userId].push({
+          from: 'them',
+          text: reply,
+          time: timeStr
+        });
 
-            // =============================================================
-            // 11. UPDATE MATCHES UI
-            // =============================================================
-            function updateMatchesUI() {
-                matchCountEl.textContent = matches.length;
-                if (matches.length === 0) {
-                    matchesListEl.innerHTML = `<span class="no-matches">❤️ Swipe right to match!</span>`;
-                    return;
-                }
-                let html = '';
-                for (const id of matches) {
-                    const user = getUser(id);
-                    if (!user) continue;
-                    html += `
-                        <img
-                            src="${user.image}"
-                            alt="${user.name}"
-                            class="match-avatar"
-                            title="${user.name}${meetings[id] ? ' 📅 ' + meetings[id] : ''}"
-                            onerror="this.src='https://ui-avatars.com/api/?name=${user.name}&background=ff6b8a&color=fff&size=80'"
-                            style="${meetings[id] ? 'border-color:#22c55e;' : ''}"
-                        />
-                    `;
-                }
-                matchesListEl.innerHTML = html;
-                // Click on match avatar to open chat
-                matchesListEl.querySelectorAll('.match-avatar').forEach((el, index) => {
-                    el.addEventListener('click', function() {
-                        const id = matches[index];
-                        if (id) openChatWithUser(id);
-                    });
-                });
-            }
+        if (currentChatPartner === userId) {
+          renderChatMessages(userId);
+        } else {
+          updateChatBadge();
+          showToast(`💬 New message from ${user.name}`, 'chat');
+        }
+        renderChatMatches();
+        updateChatBadge();
+      }
 
-            // =============================================================
-            // 12. FILTERS
-            // =============================================================
-            filterButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    filterButtons.forEach(b => b.classList.remove('active-filter'));
-                    this.classList.add('active-filter');
-                    currentFilter = this.dataset.filter;
-                    renderCards();
-                });
-            });
+      // =============================================================
+      // 8.  CHAT UI HANDLERS
+      // =============================================================
+      function handleOpenChatFromCard(e) {
+        const btn = e.currentTarget;
+        const id = parseInt(btn.dataset.id);
+        if (!matches.includes(id)) return;
+        openChatWithUser(id);
+      }
 
-            // =============================================================
-            // 13. HAMBURGER
-            // =============================================================
-            hamburger.addEventListener('click', () => {
-                navLinks.classList.toggle('open');
-            });
-            navLinks.querySelectorAll('a, .nav-link-btn').forEach(el => {
-                el.addEventListener('click', () => {
-                    navLinks.classList.remove('open');
-                });
-            });
+      // =============================================================
+      // 9.  HELPERS
+      // =============================================================
+      function getUser(id) {
+        return users.find(u => u.id === id);
+      }
 
-            // =============================================================
-            // 14. SIGN UP MODAL
-            // =============================================================
-            function openSignupModal() {
-                signupModal.classList.add('open');
-                document.body.style.overflow = 'hidden';
-                formContainer.style.display = 'block';
-                successMessage.classList.remove('show');
-                signupForm.reset();
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
-            }
+      // =============================================================
+      // 10. TOAST SYSTEM
+      // =============================================================
+      function showToast(message, type = 'like') {
+        const toast = document.createElement('div');
+        const typeMap = {
+          'like': { cls: '', icon: 'heart', color: 'var(--primary)' },
+          'match': { cls: 'toast-match', icon: 'heart', color: 'var(--secondary)' },
+          'pass': { cls: '', icon: 'times', color: 'var(--text-muted)' },
+          'meeting': { cls: 'toast-meeting', icon: 'calendar-check', color: 'var(--accent-gold)' },
+          'chat': { cls: 'toast-chat', icon: 'comment-dots', color: 'var(--primary-light)' },
+        };
+        const info = typeMap[type] || typeMap['like'];
+        toast.className = `toast ${info.cls}`;
 
-            function closeSignupModal() {
-                signupModal.classList.remove('open');
-                document.body.style.overflow = '';
-            }
+        toast.innerHTML = `
+            <i class="fas fa-${info.icon}" style="color:${info.color};"></i>
+            <span>${message}</span>
+            <button class="toast-close">&times;</button>
+          `;
 
-            openSignupBtn.addEventListener('click', openSignupModal);
-            closeSignupBtn.addEventListener('click', closeSignupModal);
-            successCloseBtn.addEventListener('click', closeSignupModal);
-            signupModal.addEventListener('click', (e) => { if (e.target === signupModal) closeSignupModal(); });
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && signupModal.classList.contains('open')) closeSignupModal();
-            });
+        toastContainer.appendChild(toast);
+        const timeout = setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3800);
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+          clearTimeout(timeout);
+          toast.remove();
+        });
+        while (toastContainer.children.length > 3) {
+          toastContainer.firstChild.remove();
+        }
+      }
 
-            signupForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-                const formData = new FormData(this);
-                try {
-                    const response = await fetch(this.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: { 'Accept': 'application/json' },
-                    });
-                    if (response.ok) {
-                        formContainer.style.display = 'none';
-                        successMessage.classList.add('show');
-                        showToast('✅ Account created successfully!', 'match');
-                    } else {
-                        const data = await response.json();
-                        showToast('❌ ' + (data.error || 'Something went wrong.'), 'pass');
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
-                    }
-                } catch (error) {
-                    showToast('❌ Network error. Please check your connection.', 'pass');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
-                }
-            });
+      // =============================================================
+      // 11. UPDATE MATCHES UI
+      // =============================================================
+      function updateMatchesUI() {
+        matchCountEl.textContent = matches.length;
+        if (matches.length === 0) {
+          matchesListEl.innerHTML = `<span class="no-matches">❤️ Swipe right to match!</span>`;
+          return;
+        }
+        let html = '';
+        for (const id of matches) {
+          const user = getUser(id);
+          if (!user) continue;
+          const hasMeeting = meetings[id] !== undefined;
+          html += `
+              <img
+                src="${user.image}"
+                alt="${user.name}"
+                class="match-avatar"
+                title="${user.name}${hasMeeting ? ' 📅 ' + meetings[id] : ''}"
+                onerror="this.src='https://ui-avatars.com/api/?name=${user.name}&background=6C5CE7&color=fff&size=80'"
+                style="${hasMeeting ? 'border-color:#22C55E;' : ''}"
+              />
+            `;
+        }
+        matchesListEl.innerHTML = html;
+        matchesListEl.querySelectorAll('.match-avatar').forEach((el, index) => {
+          el.addEventListener('click', function() {
+            const id = matches[index];
+            if (id) openChatWithUser(id);
+          });
+        });
+      }
 
-            // =============================================================
-            // 15. DATE PICKER MODAL
-            // =============================================================
-            closeDatePickerBtn.addEventListener('click', () => {
-                datePickerModal.classList.remove('open');
-                document.body.style.overflow = '';
-            });
-            datePickerModal.addEventListener('click', (e) => {
-                if (e.target === datePickerModal) {
-                    datePickerModal.classList.remove('open');
-                    document.body.style.overflow = '';
-                }
-            });
-            confirmMeetingBtn.addEventListener('click', confirmMeeting);
-            meetingDateInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') confirmMeeting();
-            });
+      // =============================================================
+      // 12. FILTERS
+      // =============================================================
+      filterButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          filterButtons.forEach(b => b.classList.remove('active-filter'));
+          this.classList.add('active-filter');
+          currentFilter = this.dataset.filter;
+          renderCards();
+        });
+      });
 
-            // =============================================================
-            // 16. CHAT PANEL
-            // =============================================================
-            openChatBtn.addEventListener('click', () => {
-                if (matches.length === 0) {
-                    showToast('💕 You have no matches yet. Start liking profiles!', 'pass');
-                    return;
-                }
-                // Open with first match
-                const firstMatch = matches[0];
-                if (firstMatch) {
-                    openChatWithUser(firstMatch);
-                } else {
-                    showToast('💕 No matches yet.', 'pass');
-                }
-            });
+      // =============================================================
+      // 13. HAMBURGER
+      // =============================================================
+      hamburger.addEventListener('click', () => {
+        navLinks.classList.toggle('open');
+      });
+      navLinks.querySelectorAll('a, .nav-link-btn').forEach(el => {
+        el.addEventListener('click', () => {
+          navLinks.classList.remove('open');
+        });
+      });
 
-            closeChatBtn.addEventListener('click', () => {
-                chatPanel.classList.remove('open');
-                document.body.style.overflow = '';
-                currentChatPartner = null;
-                chatInput.disabled = true;
-                chatSendBtn.disabled = true;
-                // Clear unread badge for this user
-                updateChatBadge();
-            });
+      // =============================================================
+      // 14. SIGN UP MODAL
+      // =============================================================
+      function openSignupModal() {
+        signupModal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        formContainer.style.display = 'block';
+        successMessage.classList.remove('show');
+        signupForm.reset();
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+      }
 
-            chatPanel.addEventListener('click', (e) => {
-                if (e.target === chatPanel) {
-                    chatPanel.classList.remove('open');
-                    document.body.style.overflow = '';
-                    currentChatPartner = null;
-                    chatInput.disabled = true;
-                    chatSendBtn.disabled = true;
-                    updateChatBadge();
-                }
-            });
+      function closeSignupModal() {
+        signupModal.classList.remove('open');
+        document.body.style.overflow = '';
+      }
 
-            chatSendBtn.addEventListener('click', sendMessage);
-            chatInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') sendMessage();
-            });
+      openSignupBtn.addEventListener('click', openSignupModal);
+      closeSignupBtn.addEventListener('click', closeSignupModal);
+      successCloseBtn.addEventListener('click', closeSignupModal);
+      signupModal.addEventListener('click', (e) => { if (e.target === signupModal) closeSignupModal(); });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && signupModal.classList.contains('open')) closeSignupModal();
+      });
 
-            // =============================================================
-            // 17. NAVIGATION: "Matches" scroll
-            // =============================================================
-            document.querySelector('a[href="#matches"]')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                document.getElementById('matches').scrollIntoView({ behavior: 'smooth' });
-            });
+      signupForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        const formData = new FormData(this);
+        try {
+          const response = await fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: { 'Accept': 'application/json' },
+          });
+          if (response.ok) {
+            formContainer.style.display = 'none';
+            successMessage.classList.add('show');
+            showToast('✅ Account created successfully!', 'match');
+          } else {
+            const data = await response.json();
+            showToast('❌ ' + (data.error || 'Something went wrong.'), 'pass');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+          }
+        } catch (error) {
+          showToast('❌ Network error. Please check your connection.', 'pass');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+        }
+      });
 
-            // =============================================================
-            // 18. KEYBOARD SHORTCUTS
-            // =============================================================
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'r' && e.ctrlKey) {
-                    e.preventDefault();
-                    if (confirm('Reset all likes, matches, and messages?')) {
-                        matches = [];
-                        likedSet = new Set();
-                        passedSet = new Set();
-                        meetings = {};
-                        messages = {};
-                        currentChatPartner = null;
-                        renderCards();
-                        updateMatchesUI();
-                        updateChatBadge();
-                        chatPanel.classList.remove('open');
-                        document.body.style.overflow = '';
-                        showToast('🔄 Reset all data', 'pass');
-                    }
-                }
-                // Escape to close chat
-                if (e.key === 'Escape' && chatPanel.classList.contains('open')) {
-                    chatPanel.classList.remove('open');
-                    document.body.style.overflow = '';
-                    currentChatPartner = null;
-                    chatInput.disabled = true;
-                    chatSendBtn.disabled = true;
-                    updateChatBadge();
-                }
-            });
+      // =============================================================
+      // 15. DATE PICKER MODAL
+      // =============================================================
+      closeDatePickerBtn.addEventListener('click', () => {
+        datePickerModal.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+      datePickerModal.addEventListener('click', (e) => {
+        if (e.target === datePickerModal) {
+          datePickerModal.classList.remove('open');
+          document.body.style.overflow = '';
+        }
+      });
+      confirmMeetingBtn.addEventListener('click', confirmMeeting);
+      meetingDateInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') confirmMeeting();
+      });
 
-            // =============================================================
-            // 19. INIT
-            // =============================================================
+      // =============================================================
+      // 16. CHAT PANEL
+      // =============================================================
+      openChatBtn.addEventListener('click', () => {
+        if (matches.length === 0) {
+          showToast('💕 You have no matches yet. Start liking profiles!', 'pass');
+          return;
+        }
+        const firstMatch = matches[0];
+        if (firstMatch) {
+          openChatWithUser(firstMatch);
+        } else {
+          showToast('💕 No matches yet.', 'pass');
+        }
+      });
+
+      closeChatBtn.addEventListener('click', () => {
+        chatPanel.classList.remove('open');
+        document.body.style.overflow = '';
+        currentChatPartner = null;
+        chatInput.disabled = true;
+        chatSendBtn.disabled = true;
+        if (typingTimeout) clearTimeout(typingTimeout);
+        updateChatBadge();
+      });
+
+      chatPanel.addEventListener('click', (e) => {
+        if (e.target === chatPanel) {
+          chatPanel.classList.remove('open');
+          document.body.style.overflow = '';
+          currentChatPartner = null;
+          chatInput.disabled = true;
+          chatSendBtn.disabled = true;
+          if (typingTimeout) clearTimeout(typingTimeout);
+          updateChatBadge();
+        }
+      });
+
+      chatSendBtn.addEventListener('click', sendMessage);
+      chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') sendMessage();
+      });
+
+      // =============================================================
+      // 17. NAVIGATION: "Matches" scroll
+      // =============================================================
+      document.querySelector('a[href="#matches"]')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('matches').scrollIntoView({ behavior: 'smooth' });
+      });
+
+      // =============================================================
+      // 18. KEYBOARD SHORTCUTS
+      // =============================================================
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'r' && e.ctrlKey) {
+          e.preventDefault();
+          if (confirm('Reset all likes, matches, meetings, and messages?')) {
+            matches = [];
+            likedSet = new Set();
+            passedSet = new Set();
+            meetings = {};
+            messages = {};
+            currentChatPartner = null;
+            if (typingTimeout) clearTimeout(typingTimeout);
             renderCards();
             updateMatchesUI();
             updateChatBadge();
+            chatPanel.classList.remove('open');
+            document.body.style.overflow = '';
+            showToast('🔄 Reset all data', 'pass');
+          }
+        }
+        if (e.key === 'Escape' && chatPanel.classList.contains('open')) {
+          chatPanel.classList.remove('open');
+          document.body.style.overflow = '';
+          currentChatPartner = null;
+          chatInput.disabled = true;
+          chatSendBtn.disabled = true;
+          if (typingTimeout) clearTimeout(typingTimeout);
+          updateChatBadge();
+        }
+      });
 
-            console.log('❤️ LoveMatch Blind Date loaded!');
-            console.log('💡 Features:');
-            console.log('  - Photos hidden until meeting scheduled');
-            console.log('  - Chat with matches');
-            console.log('  - Press Ctrl+R to reset (demo)');
+      // =============================================================
+      // 19. INIT
+      // =============================================================
+      renderCards();
+      updateMatchesUI();
+      updateChatBadge();
 
-        })();
-    </script>
+      console.log('❤️ LoveMatch Professional Edition loaded.');
+      console.log('💡 Features: Blind-date photos, chat, meeting scheduler, typing indicators.');
+      console.log('🔄 Press Ctrl+R to reset (demo).');
+
+    })();
+  </script>
 
 </body>
 </html>
